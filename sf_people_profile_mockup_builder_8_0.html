@@ -1,0 +1,2408 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SF EC · Mockup Builder v8.0</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;background:#e8e8e8;color:#1a1a1a}
+/* direction controlled dynamically */
+
+/* ── TOOLBAR ── */
+.toolbar{background:#fff;border-bottom:1px solid #ddd;padding:0 14px;height:44px;display:flex;align-items:center;gap:10px;flex-shrink:0;direction:rtl}
+.tlogo{font-weight:700;font-size:13px;color:#0070d2;display:flex;align-items:center;gap:5px}
+.tsep{width:1px;height:22px;background:#ddd;margin:0 4px}
+.ttitle{font-size:12px;color:#666}
+.tright{margin-right:auto;display:flex;gap:7px;align-items:center}
+.tbtn{font-size:12px;padding:5px 12px;border-radius:4px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#333;display:flex;align-items:center;gap:5px;font-family:inherit}
+.tbtn:hover{background:#f5f5f5}
+.tbtn.pri{background:#0070d2;color:#fff;border-color:#0070d2}
+.tbtn.pri:hover{background:#005fb8}
+
+/* Language Toggle */
+.lang-toggle{display:flex;border:1px solid #0070d2;border-radius:20px;overflow:hidden;flex-shrink:0}
+.lang-btn{font-size:12px;font-weight:600;padding:4px 14px;cursor:pointer;border:none;background:#fff;color:#0070d2;font-family:inherit;transition:background .15s,color .15s}
+.lang-btn.active{background:#0070d2;color:#fff}
+.lang-btn:hover:not(.active){background:#e8f3fd}
+
+/* ── PANES ── */
+.panes{display:flex;flex:1;overflow:hidden}
+
+/* ── BUILDER PANE (always RTL) ── */
+.builder-pane{width:380px;min-width:380px;background:#fff;border-left:1px solid #ddd;display:flex;flex-direction:column;overflow:hidden;direction:rtl}
+.b-head{padding:10px 13px;border-bottom:1px solid #ddd;font-weight:600;font-size:13px;display:flex;align-items:center;gap:8px;flex-shrink:0;background:#fafafa}
+.b-scroll{flex:1;overflow-y:auto;overflow-anchor:none;padding:12px 13px;display:flex;flex-direction:column;gap:10px}
+.b-footer{padding:10px 13px;border-top:1px solid #ddd;flex-shrink:0;background:#fafafa}
+
+/* ── PREVIEW PANE ── */
+.preview-pane{flex:1;overflow:hidden;background:#e8e8e8;position:relative;display:flex;flex-direction:column}
+.pp-wrap{flex:1;overflow-y:auto;position:relative}
+
+/* ── FORM ELEMENTS ── */
+.blabel{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+input[type=text],select,textarea{width:100%;font-size:12px;padding:5px 8px;border:1px solid #ccc;border-radius:4px;background:#fff;color:#1a1a1a;font-family:inherit}
+input[type=text]:focus,select:focus,textarea:focus{outline:none;border-color:#0070d2;box-shadow:0 0 0 2px rgba(0,112,210,.1)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hr{height:1px;background:#e8e8e8;margin:2px 0}
+
+/* ── BILINGUAL LABEL EDITOR ── */
+.bi-label-wrap{display:flex;gap:5px;align-items:center;flex:1;min-width:0}
+.bi-input-group{display:flex;gap:4px;flex:1;min-width:0}
+.bi-input-item{display:flex;flex-direction:column;flex:1;min-width:0;gap:2px}
+.bi-lang-tag{font-size:9px;font-weight:700;color:#888;text-transform:uppercase;padding:0 2px}
+.bi-lang-tag.he{color:#0070d2}
+.bi-lang-tag.en{color:#2e7d32}
+.bi-sep{width:1px;background:#e0e0e0;align-self:stretch;flex-shrink:0}
+
+/* ── SECTION BUILDER CARD ── */
+.sec-card{background:#eef2fb;border:1px solid #c8d4ee;border-radius:7px;overflow:hidden}
+.sec-head{padding:7px 10px;display:flex;align-items:center;gap:6px;background:#fff;border-bottom:1px solid #e8e8e8;cursor:pointer;user-select:none}
+.sec-head:hover{background:#f8f8f8}
+.sec-name-he{font-size:12px;font-weight:500;border:none;background:transparent;padding:0;flex:1;min-width:40px;font-family:inherit;direction:rtl}
+.sec-name-he:focus{outline:none;border-bottom:1px solid #0070d2}
+.sec-name-en{font-size:11px;color:#2e7d32;border:none;background:transparent;padding:0;width:100px;min-width:60px;font-family:inherit;direction:ltr;font-style:italic}
+.sec-name-en:focus{outline:none;border-bottom:1px solid #2e7d32}
+.sec-eff{display:flex;align-items:center;gap:3px;font-size:11px;color:#666;white-space:nowrap}
+.sec-eff input{width:auto;margin:0;cursor:pointer}
+.sec-del{background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;padding:2px}
+.sec-del:hover{color:#c00}
+.sec-body{padding:8px;display:flex;flex-direction:column;gap:5px}
+.sec-collapsed .sec-body{display:none}
+
+/* ── FIELD CARD ── */
+.fc{background:#fff;border:1px solid #e8e8e8;border-radius:5px;padding:6px 8px;position:relative;display:flex;flex-direction:column;gap:5px;cursor:default}
+.fc.dragging{opacity:.4;border:1px dashed #0070d2;background:#f0f7ff}
+.fc.drag-over{border-top:2px solid #0070d2}
+.fc-top{display:flex;gap:5px;align-items:flex-start}
+.fc-drag{cursor:grab;color:#ccc;font-size:16px;padding:2px 2px 0;flex-shrink:0}
+.fc-drag:hover{color:#888}
+.fc-drag:active{cursor:grabbing}
+.fc-controls{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.fc-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:13px;line-height:1;padding:1px}
+.fc-del:hover{color:#c00}
+.badge{font-size:10px;padding:1px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.b-req{background:#fde8e8;color:#a33}
+.b-opt{background:#e8f5e9;color:#2e7d32}
+.b-ro{background:#e3f0fc;color:#1565c0}
+.b-hid{background:#f5f5f5;color:#999;border:1px solid #e0e0e0}
+.fc-selects{display:flex;gap:5px}
+.fc-selects select{flex:1}
+
+/* ── PICKLIST EDITOR ── */
+.picklist-editor{background:#f0f7ff;border:1px solid #c5d9f0;border-radius:4px;padding:7px 8px;display:flex;flex-direction:column;gap:5px}
+.picklist-editor-title{font-size:10px;font-weight:600;color:#1565c0;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:4px}
+.pv-row{display:flex;gap:4px;align-items:center}
+.pv-bi{display:flex;flex:1;gap:4px;align-items:center;min-width:0}
+.pv-inp{flex:1;font-size:12px;padding:3px 7px;border:1px solid #c0d4e8;border-radius:3px;background:#fff;font-family:inherit}
+.pv-inp:focus{outline:none;border-color:#0070d2}
+.pv-inp.en-inp{direction:ltr;font-style:italic;border-color:#b2d4b2}
+.pv-inp.en-inp:focus{border-color:#2e7d32}
+.pv-del{background:none;border:none;cursor:pointer;color:#aaa;font-size:13px;padding:1px 3px;line-height:1;flex-shrink:0}
+.pv-del:hover{color:#c00}
+.pv-add{font-size:11px;color:#0070d2;background:none;border:none;cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:3px;font-family:inherit}
+.pv-add:hover{text-decoration:underline}
+.pv-lang-sep{font-size:10px;color:#bbb;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn-add-field{width:100%;font-size:11px;padding:5px;display:flex;align-items:center;justify-content:center;gap:4px;border:1px dashed #ccc;border-radius:4px;background:none;cursor:pointer;color:#666;margin-top:2px;font-family:inherit}
+.btn-add-field:hover{background:#f0f7ff;border-color:#0070d2;color:#0070d2}
+.btn-add-sec{width:100%;font-size:12px;padding:7px;display:flex;align-items:center;justify-content:center;gap:5px;border:1px dashed #0070d2;border-radius:6px;background:none;cursor:pointer;color:#0070d2;font-family:inherit}
+.btn-add-sec:hover{background:#e8f3fd}
+.btn-gen{width:100%;padding:9px;background:#0070d2;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit}
+.btn-gen:hover{background:#005fb8}
+.chk-row{display:flex;align-items:center;gap:6px;font-size:12px;color:#555}
+.chk-row input{width:auto;margin:0}
+
+/* ── EMPTY BUILDER ── */
+.b-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 16px;gap:10px;color:#bbb;text-align:center}
+.b-empty i{font-size:32px;display:block;margin-bottom:4px}
+.b-empty p{font-size:12px;line-height:1.5}
+
+/* ══ PEOPLE PROFILE ══ */
+.pp-topbar{background:#fff;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e0e0e0;position:sticky;top:0;z-index:10}
+.pp-topbar-title{font-size:16px;font-weight:600}
+.pp-topbar-btns{display:flex;gap:8px}
+.pp-tb-btn{font-size:12px;padding:5px 12px;border-radius:4px;cursor:pointer;border:1px solid #1473e6;color:#1473e6;background:#fff;display:flex;align-items:center;gap:5px;font-family:inherit}
+.pp-tb-btn.out{border-color:#ccc;color:#444}
+.pp-tb-btn.out:hover{background:#f5f5f5}
+.pp-layout{display:flex;min-height:calc(100vh - 91px)}
+.pp-content{flex:1;background:#c8dff5;padding:0}
+.pp-domain-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+.pp-domain-title{font-size:16px;font-weight:600;color:#1a1a1a}
+.pp-domain-add-btn{font-size:12px;padding:5px 12px;border-radius:4px;cursor:pointer;border:1px solid #0070d2;color:#0070d2;background:#fff;display:flex;align-items:center;gap:5px;font-family:inherit}
+.pp-domain-add-btn:hover{background:#e8f3fd}
+.pp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:0 12px 16px}
+
+/* Sidebar */
+.pp-sidebar{width:250px;min-width:250px;background:#fff;border-left:1px solid #e0e0e0;display:flex;flex-direction:column;flex-shrink:0}
+.pp-cover{width:100%;height:130px;position:relative;overflow:visible}
+.pp-cover-bg{position:absolute;inset:0;width:100%;height:100%;background:url('https://images.unsplash.com/photo-1501854140801-50d01698950b?w=500&q=80') center/cover no-repeat;overflow:hidden;border-radius:0}
+.pp-sidebar-av{position:absolute;bottom:-20px;left:12px;width:72px;height:72px;border-radius:50%;border:3px solid #fff;background:#0070d2;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:2}
+.pp-profile-row{display:flex;align-items:center;justify-content:flex-start;padding:28px 12px 6px;margin-top:0}
+.pp-all-actions{margin-right:auto;padding:6px 12px;font-size:12px;background:#1473e6;color:#fff;border:none;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-weight:600}
+.pp-all-actions:hover{background:#0d66d0}
+.pp-sidebar-status{display:flex;align-items:center;gap:5px;padding:0 12px 4px;font-size:11px;color:#e65100}
+.pp-sidebar-name{font-size:13px;color:#1a1a1a;padding:2px 12px 2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.pp-sidebar-name strong{font-weight:700}
+.pp-sidebar-empid{font-size:12px;font-weight:400;color:#444}
+.pp-sidebar-sub{font-size:12px;color:#555;padding:0 12px 2px;line-height:1.5}
+.pp-sidebar-phone{font-size:12px;color:#333;padding:4px 12px 8px}
+.pp-nav{border-top:1px solid #e8e8e8}
+.pp-nav-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:#0070d2;cursor:pointer;border-right:3px solid transparent}
+.pp-nav-item:hover{background:#f0f7ff}
+.pp-nav-item.active{background:#e8f3fd;color:#0070d2;border-right-color:#0070d2;font-weight:600}
+.pp-nav-item i.nav-icon{font-size:16px;opacity:.75;flex-shrink:0;color:inherit}
+.sec-count-badge{margin-right:auto;font-size:10px;background:#e8f3fd;color:#0070d2;border:1px solid #c5d9f0;border-radius:10px;padding:1px 7px}
+.pp-nav-item.active .sec-count-badge{background:#0070d2;color:#fff;border-color:#0070d2}
+
+/* Card */
+.pp-card{background:#fff;border-radius:8px;border:1px solid #d0d0d0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.pp-card-head{padding:10px 12px 7px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0}
+.pp-card-title{font-size:13px;font-weight:600;color:#1a1a1a}
+.pp-card-icons{display:flex;gap:6px;color:#888;font-size:15px}
+.pp-card-icons i{cursor:pointer}
+.pp-card-icons i:hover{color:#0070d2}
+.pp-card-body{padding:8px 12px 4px;flex:1}
+.pp-frow{display:flex;align-items:baseline;gap:6px;padding:4px 0;border-bottom:1px solid #f5f5f5}
+.pp-frow:last-child{border-bottom:none}
+.pp-frow.doc-row{flex-direction:column;align-items:flex-start;gap:3px}
+.pp-flabel{font-size:12px;color:#666;white-space:nowrap;min-width:90px;flex-shrink:0}
+.pp-flabel.req::after{content:' *';color:#d32f2f}
+
+/* Controls */
+.pp-inp{border:1px solid #bbb;border-radius:3px;padding:3px 7px;font-size:12px;width:100%;background:#fff;font-family:inherit}
+.pp-sel{border:1px solid #bbb;border-radius:3px;padding:3px 7px;font-size:12px;width:100%;background:#fff;font-family:inherit}
+.pp-ro{font-size:12px;color:#555;background:#f8f8f8;border:1px solid #ebebeb;border-radius:3px;padding:3px 7px;display:block;width:100%}
+.pp-dw{position:relative;width:100%}
+.pp-di{color:#888;font-size:12px}
+.pp-cb{display:flex;align-items:center;gap:5px}
+.pp-doc-upload{display:flex;align-items:center;gap:8px;border:1px dashed #bbb;border-radius:4px;padding:6px 10px;background:#fafafa;cursor:pointer;width:100%}
+.pp-doc-upload:hover{border-color:#0070d2;background:#f0f7ff}
+.pp-doc-view{display:flex;align-items:center;gap:6px;font-size:12px;color:#0070d2;background:#e8f3fd;border:1px solid #c5d9f0;border-radius:4px;padding:4px 9px}
+
+/* Effective Dating */
+.pp-eff-bar{background:#fff8e1;border-top:1px solid #ffe082;padding:5px 12px;display:flex;align-items:center;gap:6px;font-size:11px;color:#5d4037}
+.pp-eff-val{font-weight:600;color:#e65100}
+.pp-eff-link{margin-right:auto;font-size:11px;color:#0070d2;cursor:pointer;text-decoration:underline}
+.pp-show-all{font-size:12px;color:#0070d2;cursor:pointer;padding:6px 12px 8px;display:block;border-top:1px solid #f0f0f0;margin-top:4px}
+.pp-show-all:hover{text-decoration:underline;background:#f8fbff}
+
+/* Empty */
+.pp-empty-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:8px;flex:1;min-height:120px}
+.empty-box{width:56px;height:46px;background:linear-gradient(135deg,#64b5f6,#90caf9);border-radius:5px;display:flex;align-items:center;justify-content:center;position:relative}
+.empty-box::after{content:'';position:absolute;bottom:-4px;right:-4px;width:20px;height:16px;background:#ef5350;border-radius:3px;opacity:.8}
+.pp-empty-text{font-size:13px;font-weight:500;color:#444;text-align:center}
+.pp-empty-sub{font-size:12px;color:#888;text-align:center}
+.pp-add-btn{font-size:12px;padding:5px 14px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;color:#333;font-family:inherit}
+.pp-domain-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;grid-column:1/-1;color:#888;text-align:center}
+.pp-domain-empty i{font-size:36px;color:#b0cce8}
+.pp-domain-empty p{font-size:13px;line-height:1.5;max-width:280px}
+.pp-domain-empty button{font-size:12px;padding:7px 16px;border-radius:4px;cursor:pointer;border:1px solid #0070d2;color:#0070d2;background:#fff;font-family:inherit}
+
+/* Footer */
+.pp-ftr{padding:8px 12px;background:#f8f8f8;border-top:1px solid #e8e8e8;display:flex;gap:7px}
+.pp-bsave{background:#0070d2;color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit}
+.pp-bcancel{background:#fff;color:#333;border:1px solid #ccc;border-radius:4px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+
+/* Show-all panel */
+.show-all-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:flex-start;justify-content:flex-end}
+.show-all-overlay.open{display:flex}
+.show-all-panel{width:520px;max-width:90%;background:#fff;height:100%;overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,.15);display:flex;flex-direction:column;animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(-30px);opacity:0}to{transform:translateX(0);opacity:1}}
+.sap-head{background:#0070d2;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sap-head-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sap-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:2px}
+.sap-eff-bar{background:#fff8e1;border-bottom:1px solid #ffe082;padding:7px 16px;display:flex;align-items:center;gap:7px;font-size:12px;color:#5d4037;flex-shrink:0}
+.sap-eff-val{font-weight:600;color:#e65100}
+.sap-eff-hist{margin-right:auto;font-size:11px;color:#0070d2;cursor:pointer;text-decoration:underline}
+.sap-body{padding:16px;flex:1;display:flex;flex-direction:column}
+.sap-field{display:flex;flex-direction:column;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.sap-field:last-child{border-bottom:none}
+.sap-flabel{font-size:11px;color:#777;margin-bottom:4px}
+.sap-flabel.req::after{content:' *';color:#d32f2f}
+.sap-fhid{font-size:11px;color:#aaa;font-style:italic;padding:8px 0}
+.sap-ftr{padding:12px 16px;border-top:1px solid #e8e8e8;display:flex;gap:8px;flex-shrink:0;background:#fafafa}
+
+/* History dialog */
+.dialog-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
+.dialog-overlay.open{display:flex}
+.dialog{background:#fff;border-radius:8px;width:520px;max-width:95vw;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.dialog-head{background:#0070d2;color:#fff;padding:11px 14px;display:flex;align-items:center;justify-content:space-between}
+.dialog-head span{font-weight:600;font-size:13px}
+.dialog-close{background:none;border:none;color:#fff;font-size:17px;cursor:pointer}
+.dialog-body{padding:14px}
+.eff-table{width:100%;border-collapse:collapse;font-size:12px}
+.eff-table th{background:#f0f4ff;color:#1a3a6e;padding:7px 10px;text-align:right;font-weight:600;border-bottom:2px solid #c5d5f5}
+.eff-table td{padding:7px 10px;border-bottom:1px solid #f0f0f0;text-align:right}
+.eff-table tr:last-child td{border-bottom:none}
+.eff-table tr:hover td{background:#f8f8f8}
+.eff-tag{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+.eff-cur{background:#e8f5e9;color:#2e7d32}
+.eff-old{background:#f5f5f5;color:#888}
+
+/* ── BUSINESS RULES ── */
+.br-panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:600;align-items:flex-start;justify-content:center;padding-top:40px}
+.br-panel-overlay.open{display:flex}
+.br-panel{background:#fff;border-radius:10px;width:680px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.22);overflow:hidden;direction:rtl}
+.br-head{background:#1a237e;color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.br-head-title{font-size:14px;font-weight:600;flex:1}
+.br-head-sub{font-size:11px;opacity:.75}
+.br-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer}
+.br-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.br-ftr{padding:10px 14px;border-top:1px solid #e8e8e8;display:flex;gap:8px;background:#fafafa;flex-shrink:0}
+
+/* Rule card */
+.br-rule{border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;background:#fff}
+.br-rule.st-pending{border-color:#e53935;border-right:4px solid #e53935}
+.br-rule.st-review{border-color:#fb8c00;border-right:4px solid #fb8c00}
+.br-rule.st-approved{border-color:#e0e0e0}
+.br-rule-head{background:#f8f8f8;padding:8px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f0}
+.br-rule-num{font-size:11px;font-weight:700;color:#fff;background:#1a237e;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.br-rule-trigger-badge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px;white-space:nowrap}
+.br-rule-trigger-badge.onchange{background:#e3f2fd;color:#1565c0}
+.br-rule-trigger-badge.onsave{background:#f3e5f5;color:#6a1b9a}
+.br-rule-trigger-badge.onload{background:#e8f5e9;color:#2e7d32}
+.br-rule-del{background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;margin-right:auto;flex-shrink:0}
+.br-rule-del:hover{color:#c00}
+.br-rule-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.br-row{display:flex;align-items:flex-start;gap:8px}
+.br-row-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;padding-top:7px;min-width:68px}
+.br-row-content{flex:1;min-width:0}
+.br-row-content select,.br-row-content textarea,.br-row-content input{width:100%;font-size:12px}
+.br-row-content textarea{min-height:52px;resize:vertical;line-height:1.5}
+.br-status-row{display:flex;align-items:center;gap:8px}
+.br-status-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.br-status-badge.approved{background:#f0f0f0;color:#888}
+.br-status-badge.pending{background:#fde8e8;color:#c0392b}
+.br-status-badge.review{background:#fff3e0;color:#e67e22}
+
+/* Rules count badge on card */
+.br-count-badge{font-size:10px;background:#e8eaf6;color:#3949ab;border:1px solid #c5cae9;border-radius:10px;padding:1px 7px;cursor:pointer;display:flex;align-items:center;gap:3px}
+.br-count-badge:hover{background:#c5cae9}
+.br-count-badge.has-open{background:#fde8e8;color:#c0392b;border-color:#ffcdd2}
+
+@media print{.br-panel-overlay{display:none!important}}
+
+/* ══ WB IMPORTER v7.5 ══ */
+.wb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:center;justify-content:center}
+.wb-overlay.open{display:flex}
+.wb-modal{background:#fff;border-radius:10px;width:800px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,.25);overflow:hidden;direction:rtl}
+.wb-head{background:#1a237e;color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wb-head-title{font-size:14px;font-weight:600;flex:1}
+.wb-head-sub{font-size:11px;opacity:.7}
+.wb-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;line-height:1}
+.wb-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.wb-step{display:none;flex-direction:column;gap:12px}
+.wb-step.active{display:flex}
+.wb-step-title{font-size:13px;font-weight:600;color:#1a237e;display:flex;align-items:center;gap:6px;padding-bottom:8px;border-bottom:1px solid #e8e8e8}
+.wb-drop{border:2px dashed #b0bec5;border-radius:8px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.wb-drop:hover,.wb-drop.over{border-color:#0070d2;background:#f0f7ff}
+.wb-drop i{font-size:36px;color:#b0bec5;display:block;margin-bottom:8px}
+.wb-drop p{font-size:13px;color:#888;margin:0}
+.wb-tabs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:7px}
+.wb-tab-card{border:1px solid #e0e0e0;border-radius:6px;padding:8px 11px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;user-select:none;background:#fff}
+.wb-tab-card:hover{background:#f5f8ff;border-color:#90caf9}
+.wb-tab-card.selected{background:#e8f3fd;border:2px solid #0070d2}
+.wb-tab-card.selected .wb-chk{background:#0070d2;border-color:#0070d2;color:#fff}
+.wb-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:transparent;transition:.15s}
+.wb-tab-name{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb-tab-auto{font-size:10px;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:1px 6px;white-space:nowrap}
+.wb-tab-unknown{font-size:10px;color:#e65100;background:#fff3e0;border-radius:8px;padding:1px 6px;white-space:nowrap}
+.wb-map-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#f9f9f9;border-radius:6px;border:1px solid #ebebeb}
+.wb-map-tab{font-size:12px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb-map-arrow{color:#ccc;font-size:16px;flex-shrink:0}
+.wb-map-select{font-size:12px;padding:4px 8px;border:1px solid #ccc;border-radius:4px;background:#fff;flex:1;min-width:0;font-family:inherit}
+.wb-diff-sec{border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:8px}
+.wb-diff-sec-head{background:#f5f5f5;padding:8px 12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e8e8e8;flex-wrap:wrap}
+.wb-diff-row{display:flex;align-items:center;gap:8px;padding:5px 12px;border-bottom:1px solid #f5f5f5;font-size:12px}
+.wb-diff-row:last-child{border-bottom:none}
+.wb-diff-row.new{background:#f1f8f1}
+.wb-diff-row.removed{background:#fff5f5}
+.wb-diff-row.changed{background:#fffde7}
+.wb-dbadge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;white-space:nowrap;flex-shrink:0;min-width:42px;text-align:center}
+.wb-dbadge.new{background:#c8e6c9;color:#2e7d32}
+.wb-dbadge.removed{background:#ffcdd2;color:#c62828}
+.wb-dbadge.changed{background:#fff9c4;color:#f57f17}
+.wb-dbadge.same{background:#f0f0f0;color:#999}
+.wb-diff-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb-diff-detail{font-size:11px;color:#aaa;font-style:italic;white-space:nowrap}
+.wb-q-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;align-items:center;justify-content:center}
+.wb-q-overlay.open{display:flex}
+.wb-q-box{background:#fff;border-radius:10px;width:440px;max-width:94vw;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2);direction:rtl}
+.wb-q-head{background:#e8f3fd;padding:11px 15px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #c5d9f0}
+.wb-q-body{padding:15px;display:flex;flex-direction:column;gap:8px}
+.wb-q-text{font-size:13px;color:#1a1a1a;line-height:1.6}
+.wb-q-opt{padding:8px 12px;border:1px solid #ddd;border-radius:6px;cursor:pointer;font-size:12px;text-align:right;background:#fff;font-family:inherit;width:100%;transition:background .15s,border-color .15s}
+.wb-q-opt:hover{background:#f0f7ff;border-color:#0070d2;color:#0070d2}
+.wb-footer{padding:11px 16px;border-top:1px solid #e8e8e8;display:flex;gap:8px;align-items:center;background:#fafafa;flex-shrink:0}
+.wb-btn{font-size:12px;padding:7px 16px;border-radius:5px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;border:none}
+.wb-btn.pri{background:#0070d2;color:#fff;font-weight:600}
+.wb-btn.pri:hover{background:#005fb8}
+.wb-btn.pri:disabled{background:#b0bec5;cursor:default}
+.wb-btn.sec{background:#fff;color:#333;border:1px solid #ccc}
+.wb-btn.sec:hover{background:#f5f5f5}
+.wb-prog{font-size:11px;color:#999;margin-right:auto}
+
+.hid-acc-head{display:flex;align-items:center;gap:6px;padding:4px 8px;cursor:pointer;user-select:none;background:#f0f0f0;border:1px solid #e4e4e4;border-radius:5px;font-size:11px;color:#999;margin-top:5px}
+.hid-acc-head:hover{background:#e8e8e8;color:#666}
+.hid-acc-body{display:none;flex-direction:column;gap:3px;padding-top:3px}
+.hid-acc-body.open{display:flex}
+
+/* ══ WB LOADING ══ */
+.wb-loading{display:none;position:absolute;inset:0;background:rgba(255,255,255,.88);
+  z-index:10;align-items:center;justify-content:center;flex-direction:column;gap:12px;border-radius:10px}
+.wb-loading.show{display:flex}
+.wb-spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#0070d2;
+  border-radius:50%;animation:wbspin .7s linear infinite}
+@keyframes wbspin{to{transform:rotate(360deg)}}
+.wb-loading-msg{font-size:13px;color:#555;font-weight:500}
+.wb-loading-sub{font-size:11px;color:#aaa}
+.wb-modal{position:relative}
+
+/* ══ TEMPLATE LIBRARY v8.0 ══ */
+.tpl-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:center;justify-content:center}
+.tpl-overlay.open{display:flex}
+.tpl-modal{background:#fff;border-radius:10px;width:760px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,.25);overflow:hidden;direction:rtl}
+.tpl-head{background:linear-gradient(135deg,#1a237e,#283593);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tpl-head-title{font-size:14px;font-weight:700;flex:1}
+.tpl-head-sub{font-size:11px;opacity:.75}
+.tpl-cats{display:flex;gap:6px;padding:12px 16px 10px;border-bottom:1px solid #e8e8e8;flex-wrap:wrap;flex-shrink:0;background:#fafafa}
+.tpl-cat{font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#555;font-family:inherit;transition:.15s}
+.tpl-cat.active{background:#0070d2;color:#fff;border-color:#0070d2}
+.tpl-cat:hover:not(.active){background:#f0f7ff;border-color:#0070d2;color:#0070d2}
+.tpl-grid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;align-content:start}
+.tpl-card{border:1.5px solid #e0e0e0;border-radius:8px;padding:12px;cursor:pointer;background:#fff;transition:all .15s;display:flex;flex-direction:column;gap:7px}
+.tpl-card:hover{border-color:#0070d2;background:#f0f7ff;box-shadow:0 3px 12px rgba(0,112,210,.15);transform:translateY(-2px)}
+.tpl-card:active{transform:translateY(0)}
+.tpl-card-icon{width:36px;height:36px;border-radius:8px;background:#e8f3fd;display:flex;align-items:center;justify-content:center;color:#0070d2;font-size:18px;flex-shrink:0}
+.tpl-card-name{font-size:12px;font-weight:700;color:#1a1a1a;line-height:1.3}
+.tpl-card-en{font-size:11px;color:#888;font-style:italic}
+.tpl-card-fields{font-size:11px;color:#666;display:flex;align-items:center;gap:4px}
+.tpl-card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:1px}
+.tpl-card-tag{font-size:10px;padding:1px 6px;border-radius:8px;background:#f0f4ff;color:#3949ab;border:1px solid #c5cae9}
+/* v8.0 card polish */
+.pp-card{transition:box-shadow .15s}
+.pp-card:hover{box-shadow:0 3px 14px rgba(0,0,0,.1)}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="tlogo"><i class="ti ti-layout-grid" style="font-size:17px"></i> SF EC Mockup Builder</div>
+  <div class="tsep"></div>
+  <span class="ttitle">פרופיל אנשים · v8.0 Bilingual</span>
+  <div class="tright">
+    <!-- Language Toggle -->
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#555">
+      <i class="ti ti-language" style="font-size:15px;color:#0070d2"></i>
+      <span>תצוגת Mockup:</span>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnHe" onclick="setLang('he')">עברית</button>
+      <button class="lang-btn" id="btnEn" onclick="setLang('en')">English</button>
+    </div>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="exportCSV()" title="ייצא את כל ההגדרות לקובץ CSV לעריכה ב-Excel"><i class="ti ti-table-export" style="font-size:14px"></i> ייצא CSV</button>
+    <label class="tbtn" title="העלה קובץ CSV שעודכן" style="cursor:pointer">
+      <i class="ti ti-table-import" style="font-size:14px"></i> ייבא CSV
+      <input type="file" accept=".csv" onchange="importCSV(event)" style="display:none"/>
+    </label>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="saveConfig()" title="שמור קונפיגורציה לקובץ JSON" style="background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;font-weight:600"><i class="ti ti-device-floppy" style="font-size:14px"></i> שמור</button>
+    <label class="tbtn" title="טען קונפיגורציה שמורה" style="background:#fff3e0;color:#e65100;border-color:#ffcc80;font-weight:600;cursor:pointer"><i class="ti ti-folder-open" style="font-size:14px"></i> טען
+      <input type="file" accept=".json" onchange="loadConfig(event)" style="display:none"/>
+    </label>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="openWBImporter()" style="background:#e8f3fd;color:#0070d2;border-color:#90caf9;font-weight:600"><i class="ti ti-file-spreadsheet" style="font-size:14px"></i> טען Workbook</button>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="openTemplateLibrary()" style="background:#f3e5f5;color:#7b1fa2;border-color:#ce93d8;font-weight:600"><i class="ti ti-layout-grid-add" style="font-size:14px"></i> תבניות</button>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="exportHTML()"><i class="ti ti-download" style="font-size:14px"></i> שמור HTML</button>
+    <button class="tbtn" onclick="exportPreviewHTML()" title="ייצא רק את ה-Mockup כקובץ HTML נקי"><i class="ti ti-photo-down" style="font-size:14px"></i> ייצא Mockup</button>
+    <button class="tbtn" onclick="window.print()"><i class="ti ti-printer" style="font-size:14px"></i> הדפס</button>
+    <button class="tbtn pri" onclick="generate()"><i class="ti ti-refresh" style="font-size:14px"></i> עדכן Mockup</button>
+  </div>
+</div>
+
+<div class="app" style="height:calc(100vh - 44px);display:flex;flex-direction:column">
+<div class="panes">
+
+<!-- BUILDER (always RTL Hebrew) -->
+<div class="builder-pane">
+  <div class="b-head" id="bHead">
+    <i class="ti ti-tool"></i>
+    <span id="bHeadLabel">בחר תחום מהפרופיל</span>
+  </div>
+  <div class="b-scroll" id="bScroll">
+
+    <div class="b-empty" id="bEmpty">
+      <i class="ti ti-hand-click"></i>
+      <p>לחץ על שם תחום בסיידבר<br>כדי להגדיר את האזורים שלו</p>
+    </div>
+
+    <!-- Employee info -->
+    <div id="empBlock">
+      <div class="blabel">פרטי העובד</div>
+      <div class="row2" style="margin-bottom:6px">
+        <div><div class="blabel" style="margin-top:4px">שם מלא (HE)</div><input type="text" id="empNameHe" value="ינ באום" oninput="sched()"/></div>
+        <div><div class="blabel" style="margin-top:4px">Full Name (EN)</div><input type="text" id="empNameEn" value="Jan Baum" oninput="sched()"/></div>
+        <div><div class="blabel" style="margin-top:4px">תפקיד (HE)</div><input type="text" id="empTitleHe" value="מהנדס עיצוב תעופה" oninput="sched()"/></div>
+        <div><div class="blabel" style="margin-top:4px">Title (EN)</div><input type="text" id="empTitleEn" value="Aviation Design Engineer" oninput="sched()"/></div>
+        <div><div class="blabel" style="margin-top:4px">מחלקה</div><input type="text" id="empDept" value="Aviation Design DEU" oninput="sched()"/></div>
+        <div><div class="blabel" style="margin-top:4px">טלפון</div><input type="text" id="empPhone" value="(+49) 0426274507" oninput="sched()"/></div>
+      </div>
+      <div class="row2">
+        <div><div class="blabel">Employee ID</div><input type="text" id="empId" value="DE0033" oninput="sched()"/></div>
+        <div><div class="blabel">מצב תצוגה</div>
+          <select id="viewMode" onchange="sched()"><option value="edit">עריכה / Edit</option><option value="view">קריאה / View</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div id="domainEditor" style="display:none;flex-direction:column;gap:10px">
+      <div>
+        <div class="blabel">אזורים בתחום <span id="secCount" style="font-weight:400;font-style:italic"></span></div>
+        <div id="secList" style="display:flex;flex-direction:column;gap:7px;margin-top:6px"></div>
+      </div>
+      <button class="btn-add-sec" onclick="addSection()"><i class="ti ti-plus"></i> הוסף אזור</button>
+      <div style="height:1px"></div>
+    </div>
+
+  </div>
+  <div class="b-footer">
+    <div class="chk-row" style="margin-bottom:8px">
+      <input type="checkbox" id="autoRefresh" checked/>
+      <label for="autoRefresh">עדכון אוטומטי</label>
+    </div>
+    <button class="btn-gen" onclick="generate()"><i class="ti ti-layout-grid"></i> עדכן Mockup</button>
+  </div>
+</div>
+
+<!-- PREVIEW -->
+<div class="preview-pane" id="previewPane">
+  <div class="pp-wrap" id="ppWrap">
+    <div style="color:#aaa;text-align:center;padding:60px 20px;font-size:13px">
+      <i class="ti ti-user-circle" style="font-size:36px;display:block;margin-bottom:10px"></i>
+      לחץ "עדכן Mockup"
+    </div>
+  </div>
+  <div class="show-all-overlay" id="showAllOverlay" onclick="if(event.target===this)closePanel()">
+    <div class="show-all-panel" id="showAllPanel"></div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- History Dialog -->
+<div class="dialog-overlay" id="effDialog" onclick="if(event.target===this)closeDialog()">
+  <div class="dialog">
+    <div class="dialog-head">
+      <span id="effDialogTitle">היסטוריית תאריך אפקטיבי</span>
+      <button class="dialog-close" onclick="closeDialog()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="dialog-body">
+      <table class="eff-table" id="effTable">
+        <thead><tr><th>תאריך אפקטיבי</th><th>שונה על ידי</th><th>תאריך שינוי</th><th>סטטוס</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ LANGUAGE ═══ */
+let displayLang = 'he'; // 'he' or 'en'
+
+function setLang(lang) {
+  displayLang = lang;
+  document.getElementById('btnHe').classList.toggle('active', lang==='he');
+  document.getElementById('btnEn').classList.toggle('active', lang==='en');
+  generate();
+}
+
+function L(heStr, enStr) {
+  // Returns the string for current display language
+  if (displayLang === 'en') return enStr || heStr;
+  return heStr || enStr;
+}
+
+/* ═══ DOMAINS ═══ */
+const DOMAINS = [
+  {id:'personal',    labelHe:'נתונים אישיים',  labelEn:'Personal Information', icon:'ti-user',            sections:[]},
+  {id:'employment',  labelHe:'נתוני עבודה',     labelEn:'Employment Details',   icon:'ti-briefcase',       sections:[]},
+  {id:'compensation',labelHe:'תגמול',           labelEn:'Compensation',         icon:'ti-currency-dollar', sections:[]},
+  {id:'time',        labelHe:'ניהול זמן',       labelEn:'Time Management',      icon:'ti-calendar-off',    sections:[]},
+  {id:'performance', labelHe:'ביצועים ויעדים',  labelEn:'Performance & Goals',  icon:'ti-chart-bar',       sections:[]},
+  {id:'learning',    labelHe:'למידה ופיתוח',    labelEn:'Learning & Development',icon:'ti-book',           sections:[]},
+  {id:'benefits',    labelHe:'הטבות',           labelEn:'Benefits',             icon:'ti-heart',           sections:[]},
+  {id:'successor',   labelHe:'מציאת מחליף',    labelEn:'Succession',           icon:'ti-switch-horizontal',sections:[]},
+];
+
+let activeDomainId=null, secSeq=0, fldSeq=0, autoTimer=null;
+
+const TYPES=[
+  {v:'text',l:'טקסט'},{v:'number',l:'מספר'},{v:'date',l:'תאריך'},
+  {v:'picklist',l:'רשימה'},{v:'checkbox',l:'תיבה'},
+  {v:'textarea',l:'טקסט ארוך'},{v:'document',l:'מסמך'},
+  {v:'multiselect',l:'רב-בחירה'},
+  {v:'lookup',l:'חיפוש (Lookup)'},
+  {v:'email',l:'אימייל'},
+  {v:'phone',l:'טלפון'},
+  {v:'currency',l:'מטבע'},
+];
+const MODES=[
+  {v:'required',l:'חובה'},{v:'editable',l:'עריכה'},
+  {v:'readonly',l:'קריאה'},{v:'hidden',l:'מוסתר'},
+];
+const STATUSES=[
+  {v:'approved', lHe:'מאושר',          lEn:'Approved',          color:null},
+  {v:'pending',  lHe:'להחלטת לקוח',   lEn:'Pending Decision',  color:'#c0392b'},
+  {v:'review',   lHe:'בבדיקה',         lEn:'Under Review',      color:'#e67e22'},
+];
+function statusInfo(s){return STATUSES.find(x=>x.v===s)||STATUSES[0];}
+
+const ICONS={
+  'אישי':'ti-user','personal':'ti-user','כתובת':'ti-map-pin','address':'ti-map-pin',
+  'עבודה':'ti-briefcase','employment':'ti-briefcase','שכר':'ti-currency-dollar',
+  'תגמול':'ti-currency-dollar','compensation':'ti-currency-dollar',
+  'תעודת':'ti-id-badge','זהות':'ti-id-badge','קשר':'ti-phone','contact':'ti-phone',
+  'חירום':'ti-urgent','emergency':'ti-urgent','בנק':'ti-building-bank','bank':'ti-building-bank',
+  'השכלה':'ti-school','education':'ti-school','מסמך':'ti-file-text','document':'ti-file-text',
+  'זמן':'ti-calendar-off','time':'ti-calendar-off','ביצוע':'ti-chart-bar','performance':'ti-chart-bar',
+  'למידה':'ti-book','learning':'ti-book','הטבה':'ti-heart','benefit':'ti-heart',
+};
+function getIcon(he,en=''){
+  const l=(he+' '+en).toLowerCase();
+  for(const[k,v] of Object.entries(ICONS))if(l.includes(k))return v;
+  return 'ti-layout-list';
+}
+function modeInfo(m){
+  if(m==='required')return{cls:'b-req',lbl:'חובה'};
+  if(m==='readonly') return{cls:'b-ro', lbl:'R/O'};
+  if(m==='hidden')   return{cls:'b-hid',lbl:'מוסתר'};
+  return{cls:'b-opt',lbl:'אופציונלי'};
+}
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function ini(n){return n.split(' ').map(w=>w[0]).join('').substring(0,2);}
+function getActiveDomain(){return DOMAINS.find(d=>d.id===activeDomainId)||null;}
+
+/* ═══ TEMPLATES ═══ */
+const TEMPLATES = [
+  {id:'personal_info', cat:'personal', nameHe:'פרטים אישיים בסיסיים', nameEn:'Basic Personal Info', icon:'ti-user', nameHe2:'פרטים אישיים', nameEn2:'Personal Information', eff:true, fields:[
+    {labelHe:'שם פרטי',labelEn:'First Name',type:'text',mode:'required'},
+    {labelHe:'שם משפחה',labelEn:'Last Name',type:'text',mode:'required'},
+    {labelHe:'שם פרטי (EN)',labelEn:'First Name (EN)',type:'text',mode:'editable'},
+    {labelHe:'מגדר',labelEn:'Gender',type:'picklist',mode:'required',picklistValues:[{he:'זכר',en:'Male'},{he:'נקבה',en:'Female'},{he:'אחר',en:'Other'}]},
+    {labelHe:'תאריך לידה',labelEn:'Date of Birth',type:'date',mode:'required'},
+    {labelHe:'מצב משפחתי',labelEn:'Marital Status',type:'picklist',mode:'editable',picklistValues:[{he:'רווק/ה',en:'Single'},{he:'נשוי/ה',en:'Married'},{he:'גרוש/ה',en:'Divorced'}]},
+  ]},
+  {id:'national_id', cat:'personal', nameHe:'תעודת זהות / דרכון', nameEn:'National ID / Passport', icon:'ti-id-badge', nameHe2:'תעודת זהות', nameEn2:'National ID', eff:false, fields:[
+    {labelHe:'סוג מסמך',labelEn:'Document Type',type:'picklist',mode:'required',picklistValues:[{he:'ת.ז.',en:'National ID'},{he:'דרכון',en:'Passport'}]},
+    {labelHe:'מספר מסמך',labelEn:'Document Number',type:'text',mode:'required'},
+    {labelHe:'תאריך הנפקה',labelEn:'Issue Date',type:'date',mode:'required'},
+    {labelHe:'תאריך פקיעה',labelEn:'Expiry Date',type:'date',mode:'required'},
+    {labelHe:'מדינה מנפיקה',labelEn:'Issuing Country',type:'picklist',mode:'required',picklistValues:[{he:'ישראל',en:'Israel'},{he:'גרמניה',en:'Germany'}]},
+    {labelHe:'תמונת מסמך',labelEn:'Document Image',type:'document',mode:'editable'},
+  ]},
+  {id:'address', cat:'personal', nameHe:'כתובת', nameEn:'Address', icon:'ti-map-pin', nameHe2:'כתובת', nameEn2:'Address', eff:false, fields:[
+    {labelHe:'סוג כתובת',labelEn:'Address Type',type:'picklist',mode:'required',picklistValues:[{he:'בית',en:'Home'},{he:'עבודה',en:'Work'},{he:'אחר',en:'Other'}]},
+    {labelHe:'רחוב',labelEn:'Street',type:'text',mode:'editable'},
+    {labelHe:'עיר',labelEn:'City',type:'text',mode:'required'},
+    {labelHe:'מדינה/מחוז',labelEn:'State/Province',type:'text',mode:'editable'},
+    {labelHe:'מדינה',labelEn:'Country',type:'picklist',mode:'required',picklistValues:[{he:'ישראל',en:'Israel'},{he:'גרמניה',en:'Germany'},{he:'ארה"\u05d1',en:'USA'}]},
+    {labelHe:'מיקוד',labelEn:'Zip Code',type:'text',mode:'editable'},
+  ]},
+  {id:'contact_info', cat:'personal', nameHe:'פרטי קשר', nameEn:'Contact Information', icon:'ti-phone', nameHe2:'פרטי קשר', nameEn2:'Contact Information', eff:false, fields:[
+    {labelHe:'אימייל',labelEn:'Email Address',type:'email',mode:'required'},
+    {labelHe:'טלפון נייד',labelEn:'Mobile Phone',type:'phone',mode:'required'},
+    {labelHe:'טלפון קווי',labelEn:'Home Phone',type:'phone',mode:'editable'},
+    {labelHe:'טלפון עבודה',labelEn:'Work Phone',type:'phone',mode:'editable'},
+  ]},
+  {id:'emergency_contact', cat:'personal', nameHe:'איש קשר לחירום', nameEn:'Emergency Contact', icon:'ti-urgent', nameHe2:'קשר חירום', nameEn2:'Emergency Contact', eff:false, fields:[
+    {labelHe:'שם מלא',labelEn:'Full Name',type:'text',mode:'required'},
+    {labelHe:'קשר',labelEn:'Relationship',type:'picklist',mode:'required',picklistValues:[{he:'בן/בת זוג',en:'Spouse'},{he:'הורה',en:'Parent'},{he:'אח/ות',en:'Sibling'}]},
+    {labelHe:'טלפון',labelEn:'Phone',type:'phone',mode:'required'},
+    {labelHe:'אימייל',labelEn:'Email',type:'email',mode:'editable'},
+  ]},
+  {id:'job_info', cat:'employment', nameHe:'פרטי משרה', nameEn:'Job Information', icon:'ti-briefcase', nameHe2:'פרטי עבודה', nameEn2:'Job Information', eff:true, fields:[
+    {labelHe:'מחלקה',labelEn:'Department',type:'picklist',mode:'required',picklistValues:[{he:'משאבי אנוש',en:'HR'},{he:'כספים',en:'Finance'},{he:'הנדסה',en:'Engineering'}]},
+    {labelHe:'תפקיד',labelEn:'Job Title',type:'text',mode:'required'},
+    {labelHe:'רמת תפקיד',labelEn:'Job Level',type:'picklist',mode:'editable',picklistValues:[{he:'בכיר',en:'Senior'},{he:'בינוני',en:'Mid'},{he:'זוטר',en:'Junior'},{he:'מנהל',en:'Manager'}]},
+    {labelHe:'מנהל',labelEn:'Manager',type:'lookup',mode:'readonly'},
+    {labelHe:'תאריך כניסה',labelEn:'Start Date',type:'date',mode:'readonly'},
+    {labelHe:'סוג העסקה',labelEn:'Employment Type',type:'picklist',mode:'editable',picklistValues:[{he:'קבע',en:'Permanent'},{he:'זמני',en:'Temporary'},{he:'חלקי',en:'Part-Time'}]},
+  ]},
+  {id:'bank_details', cat:'compensation', nameHe:'פרטי בנק', nameEn:'Bank Details', icon:'ti-building-bank', nameHe2:'פרטי בנק', nameEn2:'Bank Details', eff:false, fields:[
+    {labelHe:'בנק',labelEn:'Bank',type:'picklist',mode:'required',picklistValues:[{he:'לאומי',en:'Leumi'},{he:'הפועלים',en:'Hapoalim'},{he:'דיסקונט',en:'Discount'}]},
+    {labelHe:'סניף',labelEn:'Branch',type:'text',mode:'required'},
+    {labelHe:'מספר חשבון',labelEn:'Account Number',type:'text',mode:'required'},
+    {labelHe:'שם בעל החשבון',labelEn:'Account Holder',type:'text',mode:'readonly'},
+  ]},
+  {id:'compensation_info', cat:'compensation', nameHe:'תגמול בסיסי', nameEn:'Base Compensation', icon:'ti-currency-dollar', nameHe2:'תגמול', nameEn2:'Compensation', eff:true, fields:[
+    {labelHe:'דרגת שכר',labelEn:'Pay Grade',type:'picklist',mode:'readonly'},
+    {labelHe:'שכר בסיס',labelEn:'Base Salary',type:'currency',mode:'readonly'},
+    {labelHe:'מטבע',labelEn:'Currency',type:'picklist',mode:'readonly',picklistValues:[{he:'שקל',en:'ILS'},{he:'דולר',en:'USD'},{he:'אירו',en:'EUR'}]},
+    {labelHe:'תדירות תשלום',labelEn:'Pay Frequency',type:'picklist',mode:'editable',picklistValues:[{he:'חודשי',en:'Monthly'},{he:'שבועי',en:'Weekly'}]},
+  ]},
+  {id:'education', cat:'learning', nameHe:'השכלה', nameEn:'Education', icon:'ti-school', nameHe2:'השכלה', nameEn2:'Education', eff:false, fields:[
+    {labelHe:'מוסד',labelEn:'Institution',type:'text',mode:'required'},
+    {labelHe:'תואר',labelEn:'Degree',type:'picklist',mode:'required',picklistValues:[{he:'תואר ראשון',en:"Bachelor's"},{he:'תואר שני',en:"Master's"},{he:'דוקטורט',en:'PhD'}]},
+    {labelHe:'תחום לימוד',labelEn:'Field of Study',type:'text',mode:'editable'},
+    {labelHe:'מתאריך',labelEn:'From Date',type:'date',mode:'editable'},
+    {labelHe:'עד תאריך',labelEn:'To Date',type:'date',mode:'editable'},
+  ]},
+];
+
+let _tplCat = 'all';
+
+function openTemplateLibrary(){
+  const dom = getActiveDomain();
+  if(!dom){ showToast('יש לבחור תחום תחילה'); return; }
+  _tplCat = 'all';
+  document.getElementById('tplOverlay').classList.add('open');
+  renderTemplates();
+}
+
+function closeTemplates(){
+  document.getElementById('tplOverlay').classList.remove('open');
+}
+
+function filterTemplates(cat){
+  _tplCat = cat;
+  document.querySelectorAll('.tpl-cat').forEach(b=>b.classList.toggle('active', b.dataset.cat===cat));
+  renderTemplates();
+}
+
+function renderTemplates(){
+  const list = _tplCat==='all' ? TEMPLATES : TEMPLATES.filter(t=>t.cat===_tplCat);
+  const grid = document.getElementById('tplGrid');
+  grid.innerHTML = list.map(t=>`
+    <div class="tpl-card" onclick="applyTemplate('${t.id}')">
+      <div class="tpl-card-icon"><i class="ti ${t.icon}"></i></div>
+      <div class="tpl-card-name">${t.nameHe}</div>
+      <div class="tpl-card-en">${t.nameEn}</div>
+      <div class="tpl-card-fields"><i class="ti ti-list" style="font-size:11px"></i> ${t.fields.length} שדות</div>
+      <div class="tpl-card-tags">${[...new Set(t.fields.map(f=>f.type))].slice(0,3).map(tp=>
+        `<span class="tpl-card-tag">${TYPES.find(x=>x.v===tp)?.l||tp}</span>`
+      ).join('')}</div>
+    </div>`).join('');
+  if(!list.length) grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#bbb;font-size:13px">אין תבניות בקטגוריה זו</div>';
+}
+
+function applyTemplate(tplId){
+  const dom = getActiveDomain(); if(!dom){ showToast('יש לבחור תחום'); return; }
+  const tpl = TEMPLATES.find(t=>t.id===tplId); if(!tpl) return;
+  const fields = tpl.fields.map(f=>({
+    id:++fldSeq, labelHe:f.labelHe, labelEn:f.labelEn,
+    type:f.type, mode:f.mode, status:'approved',
+    picklistValues:(f.picklistValues||[]).map(v=>({...v})), rules:[]
+  }));
+  dom.sections.push({
+    id:++secSeq, nameHe:tpl.nameHe2, nameEn:tpl.nameEn2,
+    eff:tpl.eff, collapsed:false, fields, rules:[]
+  });
+  closeTemplates();
+  renderBuilder();
+  sched();
+  showToast('✓ תבנית "'+tpl.nameHe+'" נוספה');
+}
+
+/* ═══ SELECT DOMAIN ═══ */
+function selectDomain(id){
+  activeDomainId=id;
+  const dom=getActiveDomain();if(!dom)return;
+  document.getElementById('bHeadLabel').textContent='אזורים: '+dom.labelHe;
+  document.getElementById('bEmpty').style.display='none';
+  document.getElementById('domainEditor').style.display='flex';
+  renderBuilder();generate();
+}
+
+/* ═══ SECTION OPS ═══ */
+function addSection(nameHe='אזור חדש',nameEn='New Section',eff=false){
+  const dom=getActiveDomain();if(!dom)return;
+  dom.sections.push({id:++secSeq,nameHe,nameEn,eff,fields:[],collapsed:false});
+  renderBuilder();
+  requestAnimationFrame(()=>{const b=document.getElementById('bScroll');b.scrollTop=b.scrollHeight;});
+  sched();
+}
+function removeSection(id){const dom=getActiveDomain();if(!dom)return;dom.sections=dom.sections.filter(s=>s.id!==id);renderBuilder();sched();}
+function toggleCollapse(id){const dom=getActiveDomain();if(!dom)return;const s=dom.sections.find(s=>s.id===id);if(s)s.collapsed=!s.collapsed;renderBuilder();}
+function updSecNameHe(id,v){const dom=getActiveDomain();if(!dom)return;const s=dom.sections.find(s=>s.id===id);if(s)s.nameHe=v;document.getElementById('secCount').textContent='('+dom.sections.length+')';sched();}
+function updSecNameEn(id,v){const dom=getActiveDomain();if(!dom)return;const s=dom.sections.find(s=>s.id===id);if(s)s.nameEn=v;sched();}
+function updSecEff(id,v){const dom=getActiveDomain();if(!dom)return;const s=dom.sections.find(s=>s.id===id);if(s)s.eff=v;sched();}
+
+/* ═══ FIELD OPS ═══ */
+function addField(sid){
+  const dom=getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const newId=++fldSeq;
+  s.fields.push({id:newId,labelHe:'',labelEn:'',type:'text',mode:'editable',status:'approved',picklistValues:[]});
+  renderBuilder();
+  requestAnimationFrame(()=>{
+    toggleFC(newId);
+    const el=document.getElementById('fc-wrap-'+newId);
+    if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+  sched();
+}
+function removeField(sid,fid){const dom=getActiveDomain();if(!dom)return;const s=dom.sections.find(s=>s.id===sid);if(s)s.fields=s.fields.filter(f=>f.id!==fid);renderBuilder();sched();}
+function updField(sid,fid,key,val){
+  const dom=getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const f=s.fields.find(f=>f.id===fid);if(!f)return;
+  f[key]=val;
+  if(key==='mode'){const b=document.getElementById('bdg-'+fid);if(b){const mi=modeInfo(val);b.className='badge '+mi.cls;b.textContent=mi.lbl;}}
+  if(key==='type')renderBuilder();else sched();
+}
+
+/* Picklist values — each value has {he, en} */
+function addPicklistValue(sid,fid){
+  const dom=getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const f=s.fields.find(f=>f.id===fid);if(!f)return;
+  if(!f.picklistValues)f.picklistValues=[];
+  f.picklistValues.push({he:'',en:''});renderBuilder();
+}
+function updPicklistValue(sid,fid,idx,lang,val){
+  const dom=getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const f=s.fields.find(f=>f.id===fid);if(!f||!f.picklistValues)return;
+  if(f.picklistValues[idx])f.picklistValues[idx][lang]=val;sched();
+}
+function removePicklistValue(sid,fid,idx){
+  const dom=getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const f=s.fields.find(f=>f.id===fid);if(f&&f.picklistValues)f.picklistValues.splice(idx,1);renderBuilder();
+}
+
+/* Drag & drop */
+let dragSid=null,dragFid=null,dragDomId=null;
+function onDragStart(e,sid,fid){dragSid=sid;dragFid=fid;dragDomId=activeDomainId;e.dataTransfer.effectAllowed='move';setTimeout(()=>{const el=document.getElementById('fc-'+fid);if(el)el.classList.add('dragging');},0);}
+function onDragEnd(e,fid){const el=document.getElementById('fc-'+fid);if(el)el.classList.remove('dragging');document.querySelectorAll('.fc.drag-over').forEach(el=>el.classList.remove('drag-over'));dragSid=null;dragFid=null;}
+function onDragOver(e,sid,fid){e.preventDefault();if(dragSid!==sid||dragFid===fid)return;document.querySelectorAll('.fc.drag-over').forEach(el=>el.classList.remove('drag-over'));const el=document.getElementById('fc-'+fid);if(el)el.classList.add('drag-over');}
+function onDrop(e,sid,fid){
+  e.preventDefault();if(dragSid!==sid||dragFid===fid)return;
+  const dom=DOMAINS.find(d=>d.id===dragDomId);if(!dom)return;
+  const s=dom.sections.find(s=>s.id===sid);if(!s)return;
+  const fi=s.fields.findIndex(f=>f.id===dragFid);
+  const ti=s.fields.findIndex(f=>f.id===fid);
+  if(fi<0||ti<0)return;
+  const[moved]=s.fields.splice(fi,1);s.fields.splice(ti,0,moved);
+  renderBuilder();sched();
+}
+
+function sched(){if(!document.getElementById('autoRefresh').checked)return;clearTimeout(autoTimer);autoTimer=setTimeout(generate,600);}
+
+function toggleFC(fid){
+  const body=document.getElementById('fc-body-'+fid);
+  const chev=document.getElementById('fc-chev-'+fid);
+  if(!body)return;
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'block';
+  if(chev)chev.style.transform=isOpen?'':'rotate(180deg)';
+}
+
+/* ═══ RENDER BUILDER ═══ */
+function renderBuilder(){
+  const dom=getActiveDomain();
+  if(!dom){document.getElementById('secCount').textContent='';return;}
+  document.getElementById('secCount').textContent='('+dom.sections.length+')';
+  const list=document.getElementById('secList');
+  if(!dom.sections.length){list.innerHTML='<div style="font-size:12px;color:#bbb;text-align:center;padding:10px">אין אזורים עדיין</div>';return;}
+
+  list.innerHTML=dom.sections.map(s=>{
+    const arrow=s.collapsed?'ti-chevron-down':'ti-chevron-up';
+    const visFields=s.fields.filter(f=>f.mode!=='hidden');
+    const hidFields=s.fields.filter(f=>f.mode==='hidden');
+    const renderFC=(f)=>{
+      const labelDisplay = f.labelHe || f.labelEn || 'שדה חדש';
+      const mi=modeInfo(f.mode);
+      const si=statusInfo(f.status||'approved');
+      const statusBadgeStyle=si.color?`background:${si.color}1a;color:${si.color};border:1px solid ${si.color}55`:'background:#f0f0f0;color:#888;border:1px solid #e0e0e0';
+      const isPL=f.type==='picklist';
+      const pvs=f.picklistValues||[];
+      const plEditor=isPL?`
+        <div class="picklist-editor">
+          <div class="picklist-editor-title"><i class="ti ti-list" style="font-size:12px"></i> ערכי הרשימה</div>
+          ${pvs.map((v,i)=>`
+            <div class="pv-row">
+              <div class="pv-bi">
+                <input class="pv-inp" type="text" value="${escH(v.he)}" placeholder="ערך בעברית"
+                  oninput="updPicklistValue(${s.id},${f.id},${i},'he',this.value)" title="עברית"/>
+                <span class="pv-lang-sep">|</span>
+                <input class="pv-inp en-inp" type="text" value="${escH(v.en)}" placeholder="Value in English"
+                  oninput="updPicklistValue(${s.id},${f.id},${i},'en',this.value)" title="English"/>
+              </div>
+              <button class="pv-del" onclick="removePicklistValue(${s.id},${f.id},${i})"><i class="ti ti-x"></i></button>
+            </div>`).join('')}
+          <button class="pv-add" onclick="addPicklistValue(${s.id},${f.id})"><i class="ti ti-plus" style="font-size:12px"></i> הוסף ערך</button>
+        </div>`:'' ;
+
+      return`<div style="border:1px solid #e0e0e0;border-radius:5px;overflow:hidden;margin-bottom:3px" id="fc-wrap-${f.id}">
+        <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:#fafafa;cursor:pointer;user-select:none"
+             onclick="toggleFC(${f.id})">
+          <span style="color:#ccc;font-size:15px;cursor:grab" draggable="true"
+            ondragstart="onDragStart(event,${s.id},${f.id})"
+            ondragend="onDragEnd(event,${f.id})"
+            onclick="event.stopPropagation()"><i class="ti ti-grip-vertical"></i></span>
+          <span style="font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${f.labelHe?'#1a1a1a':'#bbb'}">${escH(labelDisplay)}</span>
+          ${f.labelEn&&f.labelHe?`<span style="font-size:11px;color:#2e7d32;font-style:italic;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escH(f.labelEn)}</span>`:''}
+          <span class="badge ${mi.cls}">${mi.lbl}</span>
+          <button class="fc-del" onclick="event.stopPropagation();removeField(${s.id},${f.id})"><i class="ti ti-x"></i></button>
+          <i class="ti ti-chevron-down" id="fc-chev-${f.id}" style="font-size:11px;color:#bbb;flex-shrink:0"></i>
+        </div>
+        <div id="fc-body-${f.id}" style="display:none">
+          <div class="fc" id="fc-${f.id}"
+              ondragover="onDragOver(event,${s.id},${f.id})"
+              ondrop="onDrop(event,${s.id},${f.id})">
+            <div class="fc-top">
+              <span class="fc-drag" title="גרור לשינוי סדר"><i class="ti ti-grip-vertical"></i></span>
+              <div class="bi-input-group" style="flex:1;min-width:0">
+                <div class="bi-input-item">
+                  <span class="bi-lang-tag he">עב</span>
+                  <input type="text" value="${escH(f.labelHe)}" placeholder="שם שדה בעברית" style="direction:rtl"
+                    onchange="updField(${s.id},${f.id},'labelHe',this.value)"/>
+                </div>
+                <div class="bi-sep"></div>
+                <div class="bi-input-item">
+                  <span class="bi-lang-tag en">EN</span>
+                  <input type="text" value="${escH(f.labelEn)}" placeholder="Field label in English" style="direction:ltr;font-style:italic;border-color:#b2d4b2"
+                    onchange="updField(${s.id},${f.id},'labelEn',this.value)"/>
+                </div>
+              </div>
+              <div class="fc-controls">
+                <span class="badge ${mi.cls}" id="bdg-${f.id}">${mi.lbl}</span>
+                <button class="fc-del" onclick="removeField(${s.id},${f.id})"><i class="ti ti-x"></i></button>
+              </div>
+            </div>
+            <div class="fc-selects">
+              <select onchange="updField(${s.id},${f.id},'type',this.value)">
+                ${TYPES.map(o=>`<option value="${o.v}"${f.type===o.v?' selected':''}>${o.l}</option>`).join('')}
+              </select>
+              <select onchange="updField(${s.id},${f.id},'mode',this.value)">
+                ${MODES.map(o=>`<option value="${o.v}"${f.mode===o.v?' selected':''}>${o.l}</option>`).join('')}
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:1px">
+              <span style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap">סטטוס:</span>
+              <select onchange="updField(${s.id},${f.id},'status',this.value)" style="flex:1;font-size:11px;padding:3px 6px;border-color:${si.color||'#ccc'};color:${si.color||'#555'};font-weight:${si.color?'600':'400'}">
+                ${STATUSES.map(st=>`<option value="${st.v}"${(f.status||'approved')===st.v?' selected':''}>${st.lHe} / ${st.lEn}</option>`).join('')}
+              </select>
+              <span class="badge" style="${statusBadgeStyle};font-size:10px;padding:1px 7px">${si.lHe}</span>
+            </div>
+            ${plEditor}
+          </div>
+        </div>
+      </div>`;
+    };
+    const fhtml=[
+      ...visFields.map(f=>renderFC(f)),
+      ...(hidFields.length?[`
+        <div class="hid-acc-head" onclick="var b=this.nextElementSibling;b.classList.toggle('open');this.querySelector('i.htog').style.transform=b.classList.contains('open')?'rotate(180deg)':''">
+          <i class="ti ti-eye-off" style="font-size:12px"></i>
+          <span>שדות מוסתרים (${hidFields.length})</span>
+          <i class="ti ti-chevron-down htog" style="margin-right:auto;font-size:11px;transition:transform .2s"></i>
+        </div>
+        <div class="hid-acc-body">${hidFields.map(f=>renderFC(f)).join('')}</div>`]:[])
+    ].join('');
+
+    return`<div class="sec-card${s.collapsed?' sec-collapsed':''}" id="sc-${s.id}">
+      <div class="sec-head" onclick="toggleCollapse(${s.id})">
+        <i class="ti ${getIcon(s.nameHe,s.nameEn)}" style="font-size:14px;color:#0070d2;flex-shrink:0"></i>
+        <input class="sec-name-he" type="text" value="${escH(s.nameHe)}" placeholder="שם בעברית"
+          onclick="event.stopPropagation()" onchange="updSecNameHe(${s.id},this.value)"/>
+        <span style="font-size:10px;color:#ddd;flex-shrink:0">/</span>
+        <input class="sec-name-en" type="text" value="${escH(s.nameEn)}" placeholder="Name in EN"
+          onclick="event.stopPropagation()" onchange="updSecNameEn(${s.id},this.value)"/>
+        <span style="font-size:10px;color:#bbb;white-space:nowrap">${s.fields.length}</span>
+        <label class="sec-eff" onclick="event.stopPropagation()">
+          <input type="checkbox" ${s.eff?'checked':''} onchange="updSecEff(${s.id},this.checked)"/>
+          <span>Eff.</span>
+        </label>
+        <button class="sec-del" onclick="event.stopPropagation();removeSection(${s.id})"><i class="ti ti-trash"></i></button>
+        <i class="ti ${arrow}" style="font-size:12px;color:#bbb;flex-shrink:0"></i>
+      </div>
+      <div class="sec-body" id="sb-${s.id}">
+        ${fhtml}
+        <button class="btn-add-field" onclick="addField(${s.id})"><i class="ti ti-plus"></i> הוסף שדה</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══ FIELD CONTROLS (preview) ═══ */
+const TODAY = new Date().toLocaleDateString(displayLang==='he'?'he-IL':'en-GB');
+
+function fieldControl(f, vm) {
+  const isView = vm==='view' || f.mode==='readonly';
+  const pvs = (f.picklistValues||[]);
+  const pvDisplay = pvs.filter(v=>(displayLang==='he'?v.he:v.en)||v.he||v.en);
+
+  if(f.type==='document'){
+    return isView
+      ?`<div class="pp-doc-view"><i class="ti ti-file-text" style="font-size:14px"></i> ${L('מסמך מצורף.pdf','attached-file.pdf')}</div>`
+      :`<div class="pp-doc-upload"><i class="ti ti-upload" style="font-size:18px;color:#0070d2"></i><span style="font-size:12px;color:#555">${L('לחץ לצירוף מסמך','Click to attach document')}</span></div>`;
+  }
+  if(isView){
+    const sampleHe={text:'ערך לדוגמה',number:'42',date:'07/06/1986',picklist:'',checkbox:'✓',textarea:'טקסט לדוגמה.'};
+    const sampleEn={text:'Sample value',number:'42',date:'06/07/1986',picklist:'',checkbox:'✓',textarea:'Sample text.'};
+    const s=f.type==='picklist'&&pvDisplay.length?(displayLang==='he'?pvDisplay[0].he:pvDisplay[0].en||pvDisplay[0].he):(displayLang==='he'?sampleHe[f.type]:sampleEn[f.type])||'—';
+    return`<span style="font-size:12px;color:#1a1a1a">${f.type==='checkbox'?'✓':s}</span>`;
+  }
+  if(f.type==='picklist'){
+    const opts=pvDisplay.length
+      ?pvDisplay.map(v=>`<option>${escH(displayLang==='he'?v.he:v.en||v.he)}</option>`).join('')
+      :`<option>${L('אפשרות א','Option A')}</option><option>${L('אפשרות ב','Option B')}</option>`;
+    return`<select class="pp-sel" ${displayLang==='en'?'dir="ltr"':'dir="rtl"'}><option>${L('-- בחר --','-- Select --')}</option>${opts}</select>`;
+  }
+  if(f.type==='date')    return`<div class="pp-dw" style="display:flex;align-items:center;gap:5px"><input class="pp-inp" type="text" placeholder="${displayLang==='he'?'DD/MM/YYYY':'MM/DD/YYYY'}" style="${displayLang==='en'?'direction:ltr':''}"/><i class="ti ti-calendar pp-di"></i></div>`;
+  if(f.type==='textarea')return`<textarea class="pp-inp" rows="2" placeholder="${L('הזן טקסט...','Enter text...')}" style="${displayLang==='en'?'direction:ltr;text-align:left':''}"></textarea>`;
+  if(f.type==='checkbox')return`<div class="pp-cb"><input type="checkbox"/> <span style="font-size:12px">${L('כן','Yes')}</span></div>`;
+  if(f.type==='email'){
+    if(isView) return`<span style="font-size:12px;color:#0070d2"><i class="ti ti-mail" style="font-size:11px;vertical-align:-1px"></i> user@company.com</span>`;
+    return`<input class="pp-inp" type="text" placeholder="user@company.com" style="direction:ltr"/>`;
+  }
+  if(f.type==='phone'){
+    if(isView) return`<span style="font-size:12px;color:#1a1a1a"><i class="ti ti-phone" style="font-size:11px;vertical-align:-1px;color:#0070d2"></i> +972-50-0000000</span>`;
+    return`<div class="pp-dw" style="display:flex;align-items:center;gap:5px"><input class="pp-inp" type="text" placeholder="+972-50-0000000" style="direction:ltr"/><i class="ti ti-phone pp-di" style="color:#0070d2;font-size:14px"></i></div>`;
+  }
+  if(f.type==='currency'){
+    if(isView) return`<span style="font-size:12px;font-weight:600">₪ 15,000.00</span>`;
+    return`<div style="display:flex;align-items:center;gap:4px"><span style="font-size:13px;color:#555;font-weight:600;flex-shrink:0">₪</span><input class="pp-inp" type="number" placeholder="0.00" step="0.01" style="direction:ltr"/></div>`;
+  }
+  if(f.type==='lookup'){
+    if(isView) return`<span style="font-size:12px;color:#0070d2"><i class="ti ti-link" style="font-size:11px;vertical-align:-1px"></i> ${L('ישות מקושרת','Linked Entity')}</span>`;
+    return`<div class="pp-dw" style="display:flex;align-items:center;gap:5px"><input class="pp-inp" type="text" placeholder="${L('חיפוש...','Search...')}"/><i class="ti ti-search pp-di"></i></div>`;
+  }
+  if(f.type==='multiselect'){
+    const opts = pvDisplay.length
+      ? pvDisplay.map(v=>`<option>${escH(displayLang==='he'?v.he:v.en||v.he)}</option>`).join('')
+      :`<option>${L('אפשרות א','Option A')}</option><option>${L('אפשרות ב','Option B')}</option>`;
+    if(isView) return`<div style="display:flex;flex-wrap:wrap;gap:3px">${(pvDisplay.slice(0,2)).map(v=>`<span style="font-size:11px;background:#e8f3fd;color:#0070d2;border:1px solid #c5d9f0;border-radius:10px;padding:1px 8px">${escH(displayLang==='he'?v.he:v.en||v.he)}</span>`).join('')||'—'}</div>`;
+    return`<select class="pp-sel" multiple size="3" ${displayLang==='en'?'dir="ltr"':'dir="rtl"'}>${opts}</select>`;
+  }
+  return`<input class="pp-inp" type="${f.type==='number'?'number':'text'}" style="${displayLang==='en'?'direction:ltr':''}"/>`;
+}
+
+function getFieldLabel(f){
+  const he=f.labelHe||f.labelEn||'שדה';
+  const en=f.labelEn||f.labelHe||'Field';
+  return L(he,en);
+}
+
+function cardFieldRow(f,vm){
+  const si=statusInfo(f.status||'approved');
+  const labelColor=si.color||'';
+  const statusTag=si.color
+    ?`<span style="font-size:9px;font-weight:700;color:${si.color};background:${si.color}18;border:1px solid ${si.color}44;border-radius:8px;padding:1px 5px;white-space:nowrap;margin-right:3px">${L(si.lHe,si.lEn)}</span>`
+    :'';
+  // BR badge per field (only meaningful in show-all panel; in card just subtle)
+  const fRules=f.rules||[];
+  const {total:brTotal,open:brOpen}=countOpenRules(fRules);
+  const fBrBadge=brTotal>0
+    ?`<span style="font-size:9px;background:${brOpen>0?'#fde8e8':'#e8eaf6'};color:${brOpen>0?'#c0392b':'#3949ab'};border:1px solid ${brOpen>0?'#ffcdd2':'#c5cae9'};border-radius:8px;padding:1px 5px;white-space:nowrap"><i class="ti ti-bolt" style="font-size:9px;vertical-align:-1px"></i> ${brTotal}</span>`
+    :'';
+  const fullLbl=`<div style="display:flex;align-items:center;gap:4px;min-width:90px;flex-shrink:0;flex-wrap:wrap">${statusTag}<span class="pp-flabel${f.mode==='required'?' req':''}" style="color:${labelColor||'#666'};font-weight:${si.color?'700':'400'};margin:0">${escH(getFieldLabel(f))}</span>${fBrBadge}</div>`;
+  if(f.type==='document') return`<div class="pp-frow doc-row">${fullLbl}${fieldControl(f,vm)}</div>`;
+  return`<div class="pp-frow" style="${si.color?`border-right:3px solid ${si.color};padding-right:8px`:''}">${fullLbl}${fieldControl(f,vm)}</div>`;
+}
+
+function panelFieldRow(f,vm){
+  // get context for BR button
+  const domId = brContext?.domId || activeDomainId;
+  const secId = brContext?.secId;
+  if(f.mode==='hidden') return`<div class="sap-field"><div class="sap-fhid"><i class="ti ti-eye-off" style="font-size:12px;vertical-align:-1px"></i> ${escH(getFieldLabel(f))} (${L('מוסתר','Hidden')})</div></div>`;
+  const si=statusInfo(f.status||'approved');
+  const statusTag=si.color?`<span style="font-size:10px;font-weight:700;color:${si.color};background:${si.color}18;border:1px solid ${si.color}44;border-radius:8px;padding:1px 6px">${L(si.lHe,si.lEn)}</span>`:'';
+  const fRules=f.rules||[];
+  const {total:brTotal,open:brOpen}=countOpenRules(fRules);
+  const brBtn=`<span class="${brOpen>0?'br-count-badge has-open':'br-count-badge'}" onclick="openBRField(${secId},${f.id},'${domId}')" style="margin-right:auto">
+    <i class="ti ti-bolt" style="font-size:11px"></i> ${brTotal===0?'חוקים':brTotal+(brOpen>0?' ('+brOpen+' פתוח)':'')}
+  </span>`;
+  const lbl=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap">
+    <div class="sap-flabel${f.mode==='required'?' req':''}" style="color:${si.color||'#777'};font-weight:${si.color?'700':'400'};margin:0">${escH(getFieldLabel(f))}${f.mode==='required'?'':''}</div>
+    ${statusTag}${brBtn}
+  </div>`;
+  return`<div class="sap-field">${lbl}${fieldControl(f,vm)}</div>`;
+}
+
+/* ═══ GENERATE PREVIEW ═══ */
+function generate(){
+  const isEn = displayLang==='en';
+  const dir   = isEn ? 'ltr' : 'rtl';
+  const empName  = isEn ? (document.getElementById('empNameEn').value||'Jan Baum')   : (document.getElementById('empNameHe').value||'ינ באום');
+  const empTitle = isEn ? (document.getElementById('empTitleEn').value||'Engineer')   : (document.getElementById('empTitleHe').value||'מהנדס');
+  const empDept  = document.getElementById('empDept').value||'';
+  const empPhone = document.getElementById('empPhone').value||'';
+  const empId    = document.getElementById('empId').value||'';
+  const vm       = document.getElementById('viewMode').value;
+  const curDom   = activeDomainId||'personal';
+  const curDomData = DOMAINS.find(d=>d.id===curDom)||DOMAINS[0];
+  const domLabel = L(curDomData.labelHe, curDomData.labelEn);
+  const av = `<img src="https://randomuser.me/api/portraits/men/32.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""/>`;
+
+  const effDateStr = new Date().toLocaleDateString(isEn?'en-GB':'he-IL');
+
+  /* Sidebar nav */
+  const navHTML = DOMAINS.map(d=>{
+    const cnt = d.sections.length;
+    const lbl = L(d.labelHe, d.labelEn);
+    const badge = cnt>0?`<span class="sec-count-badge">${cnt}</span>`:'';
+    return`<div class="pp-nav-item${d.id===curDom?' active':''}" onclick="selectDomain('${d.id}')" style="direction:${dir}">
+      <i class="ti ${d.icon} nav-icon"></i>${lbl}${badge}
+    </div>`;
+  }).join('');
+
+  /* Cards */
+  const sections = curDomData.sections;
+  const cardsHTML = sections.map(s=>{
+    const secLabel = L(s.nameHe, s.nameEn);
+    const vis = s.fields.filter(f=>f.mode!=='hidden');
+    const hid = s.fields.filter(f=>f.mode==='hidden').length;
+    const preview = vis.slice(0,4);
+
+    const effBar = s.eff?`<div class="pp-eff-bar" style="direction:${dir}">
+      <i class="ti ti-calendar-event" style="font-size:13px;color:#f9a825"></i>
+      <span>${L('תאריך אפקטיבי:','Effective Date:')}</span>
+      <span class="pp-eff-val">${effDateStr}</span>
+      <span class="pp-eff-link" onclick="openHistory('${escH(secLabel)}')">${L('הצג היסטוריה','View History')}</span>
+    </div>`:'' ;
+
+    const brRules = s.rules||[];
+    const brBadge = rulesBadge(brRules, `openBRSection(${s.id},'${escH(curDom)}')`);
+
+    const headIcons=`<div class="pp-card-icons" style="gap:8px">
+      ${brBadge}
+      ${s.eff?`<i class="ti ti-history" title="${L('היסטוריה','History')}" onclick="openHistory('${escH(secLabel)}')"></i>`:''}
+      <i class="ti ti-refresh"></i><i class="ti ti-pencil"></i>
+    </div>`;
+
+    const body=vis.length===0
+      ?`<div class="pp-empty-card" style="direction:${dir}">
+          <div class="empty-box"><i class="ti ti-box" style="font-size:26px;color:#fff;position:relative;z-index:1"></i></div>
+          <div class="pp-empty-text">${L('עדיין לא קיימים נתונים','No data yet')}</div>
+          <div class="pp-empty-sub">${L('האם ברצונך להוסיף רשומה כעת?','Would you like to add a record now?')}</div>
+          ${vm==='edit'?`<button class="pp-add-btn">${L('הוספה','Add')}</button>`:''}
+        </div>`
+      :`<div class="pp-card-body" style="direction:${dir}">${preview.map(f=>cardFieldRow(f,vm)).join('')}</div>`;
+
+    const hidNote=hid&&vis.length>0
+      ?`<div style="font-size:11px;color:#999;padding:3px 12px;display:flex;align-items:center;gap:4px;direction:${dir}"><i class="ti ti-eye-off" style="font-size:11px"></i>${hid} ${L('שדות מוסתרים','hidden fields')}</div>`:'' ;
+
+    const showAll=vis.length>0
+      ?`<div class="pp-show-all" onclick="openPanel(${s.id},'${escH(curDom)}')" style="text-align:${isEn?'right':'left'}">${L('הצג הכל','Show All')}</div>`:'' ;
+
+    const footer=vm==='edit'&&vis.length>0
+      ?`<div class="pp-ftr" style="direction:${dir}"><button class="pp-bsave">${L('שמור','Save')}</button><button class="pp-bcancel">${L('ביטול','Cancel')}</button></div>`:'' ;
+
+    return`<div class="pp-card" id="card-${s.id}" style="direction:${dir}">
+      <div class="pp-card-head"><div class="pp-card-title">${escH(secLabel)}</div>${headIcons}</div>
+      ${effBar}${body}${hidNote}${showAll}${footer}
+    </div>`;
+  }).join('');
+
+  const emptyDomain=sections.length===0?`
+    <div class="pp-domain-empty" style="direction:${dir}">
+      <i class="ti ${curDomData.icon}"></i>
+      <p>${L(`אין אזורים מוגדרים עדיין עבור`,`No sections defined yet for`)}<br><strong>${domLabel}</strong></p>
+      <button onclick="selectDomain('${curDom}');addSection()">${L('+ הוסף אזור ראשון','+ Add first section')}</button>
+    </div>`:'' ;
+
+  const allActionsLabel = L('כל הפעולות','All Actions');
+  const notInOfficeLabel = L('לא במשרד','Out of Office');
+  const backTomorrowLabel = L('חזור מחר','Back tomorrow');
+  const todayLabel = L('נכון להיום','As of Today');
+  const publicProfileLabel = L('פרופיל ציבורי','Public Profile');
+
+  document.getElementById('ppWrap').innerHTML=`
+<div style="direction:${dir}">
+  <div class="pp-topbar">
+    <div class="pp-topbar-title">${L('פרופיל אנשים','People Profile')}</div>
+    <div class="pp-topbar-btns">
+      <button class="pp-tb-btn out"><i class="ti ti-calendar" style="font-size:13px"></i> ${todayLabel}</button>
+      <button class="pp-tb-btn"><i class="ti ti-user" style="font-size:13px"></i> ${publicProfileLabel}</button>
+    </div>
+  </div>
+  <div class="pp-layout">
+    <div class="pp-content">
+      <div class="pp-domain-header">
+        <div class="pp-domain-title">${domLabel}</div>
+        <button class="pp-domain-add-btn" onclick="selectDomain('${curDom}');addSection()">
+          <i class="ti ti-plus" style="font-size:13px"></i> ${L('הוסף אזור','Add Section')}
+        </button>
+      </div>
+      <div class="pp-grid">${cardsHTML}${emptyDomain}</div>
+    </div>
+    <div class="pp-sidebar" style="direction:${dir}">
+      <div>
+        <div class="pp-cover">
+          <div class="pp-cover-bg"></div>
+          <div class="pp-sidebar-av">${av}</div>
+        </div>
+        <div class="pp-profile-row">
+          <button class="pp-all-actions"><i class="ti ti-refresh" style="font-size:13px"></i> ${allActionsLabel}</button>
+        </div>
+        <div class="pp-sidebar-status"><i class="ti ti-user-circle" style="font-size:13px"></i> ${notInOfficeLabel} · <span style="color:#aaa">${backTomorrowLabel}</span></div>
+        <div class="pp-sidebar-name">
+          <i class="ti ti-id-badge-2" style="font-size:15px;color:#0070d2;flex-shrink:0"></i>
+          <strong>${escH(empName)}</strong>${empId?` <span class="pp-sidebar-empid">(${escH(empId)})</span>`:''}
+        </div>
+        <div class="pp-sidebar-sub">${escH(empTitle)}</div>
+        ${empDept?`<div class="pp-sidebar-sub">${escH(empDept)}</div>`:''}
+        ${empPhone?`<div class="pp-sidebar-phone">${L('ניד חברה:','Company Mobile:')} ${escH(empPhone)}</div>`:''}
+      </div>
+      <div class="pp-nav">${navHTML}</div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#aaa;text-align:center;padding:8px;direction:ltr">
+    People Profile Mockup · ${DOMAINS.reduce((a,d)=>a+d.sections.length,0)} sections · ${displayLang==='he'?'Hebrew':'English'} · ${vm==='edit'?'Edit':'View'} Mode
+  </div>
+</div>`;
+}
+
+/* ═══ SHOW-ALL PANEL ═══ */
+function openPanel(secId,domId){
+  const dom=DOMAINS.find(d=>d.id===domId)||getActiveDomain();if(!dom)return;
+  const s=dom.sections.find(s=>s.id===secId);if(!s)return;
+  const vm=document.getElementById('viewMode').value;
+  const isEn=displayLang==='en';
+  const dir=isEn?'ltr':'rtl';
+  const secLabel=L(s.nameHe,s.nameEn);
+  const vc=s.fields.filter(f=>f.mode!=='hidden').length;
+  const hc=s.fields.filter(f=>f.mode==='hidden').length;
+  const effDateStr=new Date().toLocaleDateString(isEn?'en-GB':'he-IL');
+  const effBar=s.eff?`<div class="sap-eff-bar" style="direction:${dir}">
+    <i class="ti ti-calendar-event" style="font-size:13px;color:#f9a825"></i>
+    <span>${L('תאריך אפקטיבי:','Effective Date:')}</span>
+    <span class="sap-eff-val">${effDateStr}</span>
+    <span class="sap-eff-hist" onclick="openHistory('${escH(secLabel)}')">${L('הצג היסטוריה','View History')}</span>
+  </div>`:'' ;
+  const visF=s.fields.filter(f=>f.mode!=='hidden');
+  const fieldsHTML=visF.length?visF.map(f=>panelFieldRow(f,vm)).join(''):`<div style="color:#bbb;text-align:center;padding:30px;font-size:13px">${L('אין שדות מוגדרים','No fields defined')}</div>`;
+  const footer=vm==='edit'?`<div class="sap-ftr" style="direction:${dir}"><button class="pp-bsave">${L('שמור','Save')}</button><button class="pp-bcancel" onclick="closePanel()">${L('ביטול','Cancel')}</button></div>`:'' ;
+  document.getElementById('showAllPanel').innerHTML=`
+    <div class="sap-head" style="direction:${dir}">
+      <div class="sap-head-title">
+        <i class="ti ${getIcon(s.nameHe,s.nameEn)}" style="font-size:17px"></i>
+        ${escH(secLabel)}
+        <span style="font-size:11px;font-weight:400;opacity:.8">${vc} ${L('שדות','fields')}${hc?` · ${hc} ${L('מוסתרים','hidden')}`:''}</span>
+      </div>
+      <button class="sap-close" onclick="closePanel()"><i class="ti ti-x"></i></button>
+    </div>
+    ${effBar}
+    <div class="sap-body" style="direction:${dir}">${fieldsHTML}</div>
+    ${footer}`;
+  document.getElementById('showAllOverlay').classList.add('open');
+}
+function closePanel(){document.getElementById('showAllOverlay').classList.remove('open');}
+
+/* ═══ HISTORY ═══ */
+function openHistory(name){
+  document.getElementById('effDialogTitle').textContent=name+' — '+L('היסטוריית תאריך אפקטיבי','Effective Date History');
+  const tbody=document.querySelector('#effTable tbody');
+  const rows=[
+    {date:new Date().toLocaleDateString('he-IL'),changedOn:new Date().toLocaleDateString('he-IL'),by:L('משתמש נוכחי','Current User'),cur:true},
+    {date:'01/01/2024',changedOn:'02/01/2024',by:L('מנהל מערכת','Admin'),cur:false},
+    {date:'01/06/2023',changedOn:'03/06/2023',by:L('מנהל HR','HR Manager'),cur:false},
+    {date:'15/03/2022',changedOn:'16/03/2022',by:'Admin',cur:false},
+  ];
+  tbody.innerHTML=rows.map(r=>`<tr><td>${r.date}</td><td>${r.by}</td><td>${r.changedOn}</td>
+    <td><span class="eff-tag ${r.cur?'eff-cur':'eff-old'}">${r.cur?L('נוכחי','Current'):L('קודם','Past')}</span></td></tr>`).join('');
+  document.getElementById('effDialog').classList.add('open');
+}
+function closeDialog(){document.getElementById('effDialog').classList.remove('open');}
+
+/* ═══ BUSINESS RULES ═══ */
+let brSeq = 0;
+// brContext = {type:'section'|'field', secId, fieldId?, domId}
+let brContext = null;
+
+const BR_TRIGGERS = [
+  {v:'onchange', l:'On Change — שינוי שדה'},
+  {v:'onsave',   l:'On Save — בשמירה'},
+  {v:'onload',   l:'On Load — בפתיחת מסך'},
+];
+const BR_STATUSES = [
+  {v:'approved', l:'מאושר',        cls:'approved'},
+  {v:'pending',  l:'להחלטת לקוח', cls:'pending'},
+  {v:'review',   l:'בבדיקה',       cls:'review'},
+];
+
+function getSectionForBR(){
+  if(!brContext) return null;
+  const dom = DOMAINS.find(d=>d.id===brContext.domId);
+  if(!dom) return null;
+  return dom.sections.find(s=>s.id===brContext.secId)||null;
+}
+function getFieldForBR(){
+  const s = getSectionForBR();
+  if(!s||!brContext.fieldId) return null;
+  return s.fields.find(f=>f.id===brContext.fieldId)||null;
+}
+function getRulesArray(){
+  if(brContext.type==='field'){
+    const f=getFieldForBR();
+    if(!f)return[];
+    if(!f.rules)f.rules=[];
+    return f.rules;
+  } else {
+    const s=getSectionForBR();
+    if(!s)return[];
+    if(!s.rules)s.rules=[];
+    return s.rules;
+  }
+}
+
+function openBRSection(secId, domId){
+  brContext = {type:'section', secId, domId};
+  const dom = DOMAINS.find(d=>d.id===domId);
+  const s = dom?.sections.find(s=>s.id===secId);
+  if(!s) return;
+  document.getElementById('brTitle').textContent = 'Business Rules — ' + s.nameHe;
+  document.getElementById('brSubtitle').textContent = 'חוקים ברמת האזור: On Save / On Load';
+  document.getElementById('brOverlay').classList.add('open');
+  renderBR();
+}
+
+function openBRField(secId, fieldId, domId){
+  brContext = {type:'field', secId, fieldId, domId};
+  const dom = DOMAINS.find(d=>d.id===domId);
+  const s = dom?.sections.find(s=>s.id===secId);
+  const f = s?.fields.find(f=>f.id===fieldId);
+  if(!f) return;
+  document.getElementById('brTitle').textContent = 'Business Rules — ' + (f.labelHe||f.labelEn||'שדה');
+  document.getElementById('brSubtitle').textContent = 'חוקים ברמת השדה: On Change';
+  document.getElementById('brOverlay').classList.add('open');
+  renderBR();
+}
+
+function closeBR(){
+  document.getElementById('brOverlay').classList.remove('open');
+  brContext = null;
+  generate(); // refresh mockup to update rule count badges
+}
+
+function addRule(){
+  const rules = getRulesArray();
+  const isField = brContext.type==='field';
+  rules.push({
+    id: ++brSeq,
+    trigger: isField ? 'onchange' : 'onsave',
+    condition: '',
+    action: '',
+    status: 'approved',
+  });
+  renderBR();
+}
+
+function removeRule(ruleId){
+  const rules = getRulesArray();
+  const idx = rules.findIndex(r=>r.id===ruleId);
+  if(idx>=0) rules.splice(idx,1);
+  renderBR();
+}
+
+function updRule(ruleId, key, val){
+  const rules = getRulesArray();
+  const r = rules.find(r=>r.id===ruleId);
+  if(r) r[key]=val;
+  if(key==='status'||key==='trigger') renderBR();
+}
+
+function renderBR(){
+  const rules = getRulesArray();
+  const isField = brContext?.type==='field';
+  const body = document.getElementById('brBody');
+  document.getElementById('brRuleCount').textContent = rules.length + ' חוקים';
+
+  if(!rules.length){
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:#bbb;font-size:13px">
+      <i class="ti ti-bolt-off" style="font-size:32px;display:block;margin-bottom:10px"></i>
+      אין חוקים מוגדרים עדיין<br>
+      <span style="font-size:12px">לחץ "הוסף חוק" כדי להתחיל</span>
+    </div>`;
+    return;
+  }
+
+  // Available fields for On Change trigger label
+  const s = getSectionForBR();
+  const fieldOptions = s ? s.fields
+    .filter(f=>f.mode!=='hidden')
+    .map(f=>`<option value="${f.id}">${escH(f.labelHe||f.labelEn||'שדה')}</option>`)
+    .join('') : '';
+
+  body.innerHTML = rules.map((r,idx)=>{
+    const si = BR_STATUSES.find(x=>x.v===r.status)||BR_STATUSES[0];
+    const tBadgeCls = r.trigger==='onchange'?'onchange':r.trigger==='onsave'?'onsave':'onload';
+    const tLabel = BR_TRIGGERS.find(t=>t.v===r.trigger)?.l || r.trigger;
+
+    // Trigger row
+    const triggerOpts = (isField
+      ? BR_TRIGGERS.filter(t=>t.v==='onchange')
+      : BR_TRIGGERS.filter(t=>t.v!=='onchange')
+    ).map(t=>`<option value="${t.v}"${r.trigger===t.v?' selected':''}>${t.l}</option>`).join('');
+
+    // On Change: show field selector (for section-level only — pick which field)
+    const fieldSelector = (!isField && r.trigger==='onchange' && s)
+      ? `<div class="br-row" style="margin-top:4px">
+           <span class="br-row-label">שדה</span>
+           <div class="br-row-content">
+             <select onchange="updRule(${r.id},'onChangeFieldId',this.value)">
+               <option value="">— בחר שדה —</option>
+               ${s.fields.filter(f=>f.mode!=='hidden').map(f=>
+                 `<option value="${f.id}"${r.onChangeFieldId===f.id?' selected':''}>${escH(f.labelHe||f.labelEn||'שדה')}</option>`
+               ).join('')}
+             </select>
+           </div>
+         </div>` : '';
+
+    const statusOpts = BR_STATUSES.map(st=>
+      `<option value="${st.v}"${r.status===st.v?' selected':''}>${st.l}</option>`
+    ).join('');
+
+    return`<div class="br-rule st-${si.v}" id="brrule-${r.id}">
+      <div class="br-rule-head">
+        <div class="br-rule-num">${idx+1}</div>
+        <span class="br-rule-trigger-badge ${tBadgeCls}">${tLabel.split('—')[0].trim()}</span>
+        <span style="font-size:11px;color:#888;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          ${r.action ? escH(r.action.substring(0,60))+'...' : 'לא הוגדרה פעולה'}
+        </span>
+        <span class="br-status-badge ${si.cls}">${si.l}</span>
+        <button class="br-rule-del" onclick="removeRule(${r.id})"><i class="ti ti-trash" style="font-size:14px"></i></button>
+      </div>
+      <div class="br-rule-body">
+        <div class="br-row">
+          <span class="br-row-label">טריגר</span>
+          <div class="br-row-content">
+            <select onchange="updRule(${r.id},'trigger',this.value)">${triggerOpts}</select>
+          </div>
+        </div>
+        ${fieldSelector}
+        <div class="br-row">
+          <span class="br-row-label">תנאי</span>
+          <div class="br-row-content">
+            <input type="text" value="${escH(r.condition)}" placeholder='אופציונלי — למשל: "אם מדינה = ישראל"'
+              onchange="updRule(${r.id},'condition',this.value)"/>
+          </div>
+        </div>
+        <div class="br-row">
+          <span class="br-row-label">פעולה</span>
+          <div class="br-row-content">
+            <textarea placeholder='תאר את הפעולה — למשל: "הפוך שדה מס׳ זהות לחובה ומסתיר שדה דרכון"'
+              onchange="updRule(${r.id},'action',this.value)">${escH(r.action)}</textarea>
+          </div>
+        </div>
+        <div class="br-row">
+          <span class="br-row-label">סטטוס</span>
+          <div class="br-row-content br-status-row">
+            <select onchange="updRule(${r.id},'status',this.value)" style="width:auto">${statusOpts}</select>
+            <span class="br-status-badge ${si.cls}">${si.l}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Count all open (non-approved) rules on a section or field */
+function countOpenRules(rulesArr){
+  if(!rulesArr||!rulesArr.length) return {total:0,open:0};
+  return {total:rulesArr.length, open:rulesArr.filter(r=>r.status!=='approved').length};
+}
+
+function rulesBadge(rulesArr, onClickFn){
+  const {total,open} = countOpenRules(rulesArr);
+  const cls = open>0 ? 'br-count-badge has-open' : 'br-count-badge';
+  const label = total===0
+    ? `<i class="ti ti-bolt" style="font-size:11px"></i> חוקים`
+    : `<i class="ti ti-bolt" style="font-size:11px"></i> ${total}${open>0?' ('+open+' פתוח)':''}`;
+  return `<span class="${cls}" onclick="${onClickFn}">${label}</span>`;
+}
+
+/* ═══ CSV EXPORT ═══ */
+async function exportCSV(){
+  // Columns:
+  // domain_id | domain_he | domain_en |
+  // section_nameHe | section_nameEn | section_effective_dating |
+  // field_labelHe | field_labelEn | field_type | field_mode |
+  // picklist_values_he (;-separated) | picklist_values_en (;-separated)
+
+  const BOM = '\uFEFF'; // UTF-8 BOM so Excel opens Hebrew correctly
+  const SEP = ',';
+  const NL  = '\r\n';
+
+  const header = [
+    'domain_id','domain_label_he','domain_label_en',
+    'section_name_he','section_name_en','section_effective_dating',
+    'field_label_he','field_label_en','field_type','field_mode','field_status',
+    'picklist_values_he','picklist_values_en',
+    'rule_level','rule_trigger','rule_condition','rule_action','rule_status'
+  ].map(csvCell).join(SEP);
+
+  const rows = [];
+  DOMAINS.forEach(dom => {
+    if(dom.sections.length === 0){
+      // emit one row per domain even if empty, so user knows all domains exist
+      rows.push([
+        csvCell(dom.id), csvCell(dom.labelHe), csvCell(dom.labelEn),
+        '','','','','','','','',''
+      ].join(SEP));
+      return;
+    }
+    dom.sections.forEach(sec => {
+      if(sec.fields.length === 0){
+        rows.push([
+          csvCell(dom.id), csvCell(dom.labelHe), csvCell(dom.labelEn),
+          csvCell(sec.nameHe), csvCell(sec.nameEn), csvCell(sec.eff?'yes':'no'),
+          '','','','','',''
+        ].join(SEP));
+        return;
+      }
+      sec.fields.forEach(f => {
+        const pvHe = (f.picklistValues||[]).map(v=>v.he||'').join(';');
+        const pvEn = (f.picklistValues||[]).map(v=>v.en||'').join(';');
+        const baseRow = [
+          csvCell(dom.id), csvCell(dom.labelHe), csvCell(dom.labelEn),
+          csvCell(sec.nameHe), csvCell(sec.nameEn), csvCell(sec.eff?'yes':'no'),
+          csvCell(f.labelHe), csvCell(f.labelEn),
+          csvCell(f.type), csvCell(f.mode), csvCell(f.status||'approved'),
+          csvCell(pvHe), csvCell(pvEn),
+        ];
+        // field row without rule
+        const fRules = f.rules||[];
+        if(!fRules.length){
+          rows.push([...baseRow,'','','','',''].join(SEP));
+        } else {
+          fRules.forEach(r=>{
+            rows.push([...baseRow,
+              csvCell('field'), csvCell(r.trigger),
+              csvCell(r.condition||''), csvCell(r.action||''), csvCell(r.status||'approved')
+            ].join(SEP));
+          });
+        }
+      });
+      // Section-level rules (on save / on load)
+      const sRules = sec.rules||[];
+      sRules.forEach(r=>{
+        rows.push([
+          csvCell(dom.id), csvCell(dom.labelHe), csvCell(dom.labelEn),
+          csvCell(sec.nameHe), csvCell(sec.nameEn), csvCell(sec.eff?'yes':'no'),
+          '','','','','','','',
+          csvCell('section'), csvCell(r.trigger),
+          csvCell(r.condition||''), csvCell(r.action||''), csvCell(r.status||'approved')
+        ].join(SEP));
+      });
+    });
+  });
+
+  const csv = BOM + header + NL + rows.join(NL);
+  const ts = new Date().toISOString().slice(0,10);
+  await smartSave(csv, 'sf_mockup_config_'+ts+'.csv', 'text/csv', '.csv');
+}
+
+function csvCell(val){
+  // Wrap in quotes and escape internal quotes
+  const s = String(val==null?'':val);
+  return '"' + s.replace(/"/g,'""') + '"';
+}
+
+/* ═══ CSV IMPORT ═══ */
+function importCSV(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      parseAndLoadCSV(e.target.result);
+      event.target.value = ''; // reset input
+    } catch(err) {
+      alert('שגיאה בקריאת הקובץ:\n' + err.message);
+    }
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseAndLoadCSV(text){
+  // Strip BOM if present
+  if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+
+  const lines = parseCSVLines(text);
+  if(lines.length < 2) throw new Error('הקובץ ריק או לא תקין');
+
+  const header = lines[0].map(h => h.trim().toLowerCase());
+  const COL = {
+    domain_id:                 header.indexOf('domain_id'),
+    domain_label_he:           header.indexOf('domain_label_he'),
+    domain_label_en:           header.indexOf('domain_label_en'),
+    section_name_he:           header.indexOf('section_name_he'),
+    section_name_en:           header.indexOf('section_name_en'),
+    section_effective_dating:  header.indexOf('section_effective_dating'),
+    field_label_he:            header.indexOf('field_label_he'),
+    field_label_en:            header.indexOf('field_label_en'),
+    field_type:                header.indexOf('field_type'),
+    field_mode:                header.indexOf('field_mode'),
+    field_status:              header.indexOf('field_status'),
+    picklist_values_he:        header.indexOf('picklist_values_he'),
+    picklist_values_en:        header.indexOf('picklist_values_en'),
+    rule_level:                header.indexOf('rule_level'),
+    rule_trigger:              header.indexOf('rule_trigger'),
+    rule_condition:            header.indexOf('rule_condition'),
+    rule_action:               header.indexOf('rule_action'),
+    rule_status:               header.indexOf('rule_status'),
+  };
+
+  if(COL.domain_id < 0) throw new Error('עמודת domain_id לא נמצאה בקובץ');
+
+  // Reset all domains' sections
+  DOMAINS.forEach(d => d.sections = []);
+  secSeq = 0; fldSeq = 0;
+
+  // We'll build sections grouped by domain+sectionName
+  // Use a map: domId -> Map(secNameHe -> section object)
+  const domSecMap = {};
+
+  for(let i=1; i<lines.length; i++){
+    const r = lines[i];
+    if(!r || r.length < 2) continue;
+
+    const get = col => col >= 0 && col < r.length ? r[col].trim() : '';
+
+    const domId     = get(COL.domain_id);
+    const secNameHe = get(COL.section_name_he);
+    const secNameEn = get(COL.section_name_en);
+    const secEff    = get(COL.section_effective_dating).toLowerCase() === 'yes';
+    const fLabelHe  = get(COL.field_label_he);
+    const fLabelEn  = get(COL.field_label_en);
+    const fType     = get(COL.field_type) || 'text';
+    const fMode     = get(COL.field_mode) || 'editable';
+    const fStatus   = get(COL.field_status) || 'approved';
+    const pvHe      = get(COL.picklist_values_he);
+    const pvEn      = get(COL.picklist_values_en);
+    const rLevel    = get(COL.rule_level);
+    const rTrigger  = get(COL.rule_trigger);
+    const rCondition= get(COL.rule_condition);
+    const rAction   = get(COL.rule_action);
+    const rStatus   = get(COL.rule_status) || 'approved';
+
+    if(!domId) continue;
+
+    const dom = DOMAINS.find(d => d.id === domId);
+    if(!dom) continue; // unknown domain — skip
+
+    if(!secNameHe) continue; // domain-only row with no section
+
+    // Find or create section
+    if(!domSecMap[domId]) domSecMap[domId] = {};
+    const secKey = secNameHe + '||' + secNameEn;
+    if(!domSecMap[domId][secKey]){
+      const newSec = {id:++secSeq, nameHe:secNameHe, nameEn:secNameEn,
+                      eff:secEff, fields:[], rules:[], collapsed:false};
+      dom.sections.push(newSec);
+      domSecMap[domId][secKey] = newSec;
+    }
+    const sec = domSecMap[domId][secKey];
+
+    // Section-level rule row
+    if(rLevel==='section' && rTrigger){
+      if(!sec.rules) sec.rules=[];
+      sec.rules.push({id:++brSeq, trigger:rTrigger, condition:rCondition, action:rAction, status:rStatus});
+      continue;
+    }
+
+    if(!fLabelHe && !fLabelEn) continue; // section row with no field
+
+    // Build picklist values
+    const heVals = pvHe ? pvHe.split(';') : [];
+    const enVals = pvEn ? pvEn.split(';') : [];
+    const maxLen = Math.max(heVals.length, enVals.length);
+    const picklistValues = maxLen > 0 && (pvHe || pvEn)
+      ? Array.from({length:maxLen}, (_,i) => ({he:heVals[i]||'', en:enVals[i]||''}))
+      : [];
+
+    // Find existing field (same labels) or create
+    const fKey = fLabelHe+'||'+fLabelEn;
+    if(!sec._fieldMap) sec._fieldMap={};
+    if(!sec._fieldMap[fKey]){
+      const newF = {id:++fldSeq, labelHe:fLabelHe, labelEn:fLabelEn,
+                    type:fType, mode:fMode, status:fStatus, picklistValues, rules:[]};
+      sec.fields.push(newF);
+      sec._fieldMap[fKey] = newF;
+    }
+    const fld = sec._fieldMap[fKey];
+
+    // Field-level rule row
+    if(rLevel==='field' && rTrigger){
+      if(!fld.rules) fld.rules=[];
+      fld.rules.push({id:++brSeq, trigger:rTrigger, condition:rCondition, action:rAction, status:rStatus});
+    }
+  }
+
+  // Switch to first domain that has content, or personal
+  const firstWithContent = DOMAINS.find(d => d.sections.length > 0);
+  selectDomain(firstWithContent ? firstWithContent.id : 'personal');
+  generate();
+
+  // Show success toast
+  showToast('הקובץ יובא בהצלחה ✓');
+}
+
+/* Parse CSV properly (handles quoted fields with commas and newlines) */
+function parseCSVLines(text){
+  const rows = [];
+  let row = [], field = '', inQuote = false;
+  for(let i=0; i<text.length; i++){
+    const ch = text[i];
+    const next = text[i+1];
+    if(inQuote){
+      if(ch==='"' && next==='"'){ field+='"'; i++; }
+      else if(ch==='"'){ inQuote=false; }
+      else { field+=ch; }
+    } else {
+      if(ch==='"'){ inQuote=true; }
+      else if(ch===','){ row.push(field); field=''; }
+      else if(ch==='\r'&&next==='\n'){ row.push(field); rows.push(row); row=[]; field=''; i++; }
+      else if(ch==='\n'||ch==='\r'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else { field+=ch; }
+    }
+  }
+  if(field||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(c=>c.trim()));
+}
+
+/* Toast notification */
+function showToast(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style, {
+    position:'fixed', bottom:'24px', left:'50%', transform:'translateX(-50%)',
+    background:'#2e7d32', color:'#fff', padding:'10px 22px', borderRadius:'6px',
+    fontSize:'13px', fontWeight:'600', zIndex:'9999', boxShadow:'0 4px 14px rgba(0,0,0,.2)',
+    direction:'rtl', transition:'opacity .3s'
+  });
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(), 400); }, 2500);
+}
+
+/* ═══ EXPORT HTML ═══ */
+async function exportHTML(){
+  const ts = new Date().toISOString().slice(0,10);
+  await smartSave(new Blob(['<!DOCTYPE html>\n'+document.documentElement.outerHTML],{type:'text/html'}), 'sf_mockup_builder_'+ts+'.html', 'text/html', '.html');
+}
+
+async function exportPreviewHTML(){
+  generate();
+  const content = document.getElementById('ppWrap').innerHTML;
+  const headHTML = document.head.innerHTML;
+  const empName = (displayLang==='he'
+    ? (document.getElementById('empNameHe').value||'Employee')
+    : (document.getElementById('empNameEn').value||'Employee'));
+  const ts = new Date().toISOString().slice(0,10);
+  const secCount = DOMAINS.reduce((a,d)=>a+d.sections.length,0);
+  const html = '<!DOCTYPE html>\n' +
+    `<html lang="${displayLang==='he'?'he':'en'}" dir="${displayLang==='he'?'rtl':'ltr'}">\n` +
+    '<head>\n<meta charset="UTF-8"/>\n<meta name="viewport" content="width=device-width,initial-scale=1"/>\n' +
+    `<title>SF EC People Profile — ${empName}</title>\n` +
+    headHTML + '\n' +
+    '<style>body{background:#e8e8e8;overflow:auto}' +
+    '*{cursor:default!important}a{pointer-events:none}' +
+    '.show-all-overlay,.br-panel-overlay,.wb-overlay,.tpl-overlay,.wb-q-overlay,.dialog-overlay{display:none!important}' +
+    '</style>\n</head>\n<body>\n' +
+    `<div style="background:#e8e8e8;min-height:100vh">${content}</div>\n` +
+    `<div style="text-align:center;padding:10px;font-size:11px;color:#aaa;direction:ltr">SF EC Mockup Builder v8.0 · ${secCount} sections · ${ts}</div>\n` +
+    '</body>\n</html>';
+  await smartSave(html, 'sf_mockup_'+empName.replace(/\s+/g,'_')+'_'+ts+'.html', 'text/html', '.html');
+}
+
+/* ═══ SMART SAVE v8.0 — native file picker with fallback ═══ */
+async function smartSave(content, suggestedName, mimeType, ext){
+  const blob = content instanceof Blob ? content : new Blob([content], {type: mimeType+';charset=utf-8'});
+  if(window.showSaveFilePicker){
+    try{
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types:[{description:'File', accept:{[mimeType]:[ext]}}],
+        startIn:'documents',
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      showToast('✓ נשמר: '+handle.name);
+      return;
+    } catch(e){
+      if(e.name==='AbortError') return;
+      // fall through to download
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = suggestedName; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ══ WB IMPORTER JS v7.5 ══ */
+const WB_SKIP=['cover sheet','document control','table of contents','picklist','quick action',
+  'copyright','meetings summary','emp header','conditional defaults','integration','offcyle',
+  'configurable new hire','user account'];
+
+const WB_AUTO_MAP=[
+  {kw:['personal info','biographical info'],        domId:'personal'},
+  {kw:['employment info','job info'],               domId:'employment'},
+  {kw:['comp info','pay component','compensation'], domId:'compensation'},
+  {kw:['employee time'],                            domId:'time'},
+  {kw:['performance'],                              domId:'performance'},
+  {kw:['learning','formal education','licences'],   domId:'learning'},
+  {kw:['benefit','pension','payment info'],         domId:'benefits'},
+  {kw:['succession','successor','global assignment'],domId:'successor'},
+];
+
+const WB_TYPE_MAP={STRING:'text',DATE:'date',BOOLEAN:'checkbox',COUNTRY:'picklist',
+                   LONG:'number',DOUBLE:'number',PICKLIST:'picklist'};
+
+let _wbStep=1, _wbBook=null, _wbSheets=[], _wbSel=[], _wbMaps=[], _wbDiff=[];
+
+function openWBImporter(){
+  _wbStep=1;_wbBook=null;_wbSheets=[];_wbSel=[];_wbMaps=[];_wbDiff=[];
+  document.getElementById('wbFileInfo').style.display='none';
+  document.getElementById('wbFileIn').value='';
+  _wbGoStep(1);
+  document.getElementById('wbBtnNext').disabled=true;
+  document.getElementById('wbOverlay').classList.add('open');
+}
+function closeWB(){document.getElementById('wbOverlay').classList.remove('open');}
+
+function _wbGoStep(n){
+  _wbStep=n;
+  [1,2,3,4].forEach(i=>document.getElementById('wbStep'+i).classList.toggle('active',i===n));
+  document.getElementById('wbProg').textContent='שלב '+n+' מתוך 4';
+  document.getElementById('wbSub').textContent=['','בחר קובץ Excel','בחר אזורים לייבוא','שייך אזורים לתחומים','סקור ואשר שינויים'][n];
+  document.getElementById('wbNextLbl').textContent=n===4?'החל שינויים':'המשך';
+  document.getElementById('wbBtnBack').style.display=n>1?'flex':'none';
+  document.getElementById('wbBtnNext').disabled=false;
+}
+function wbBack(){if(_wbStep>1)_wbGoStep(_wbStep-1);}
+
+/* Load XLSX */
+/* ── Web Worker script (runs off main thread) ── */
+const _WB_WORKER_SRC = `
+importScripts('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');
+const WB_TYPE_MAP={STRING:'text',DATE:'date',BOOLEAN:'checkbox',COUNTRY:'picklist',LONG:'number',DOUBLE:'number',PICKLIST:'picklist'};
+
+function parseSheet(ws){
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  let hi=-1;
+  for(let i=0;i<Math.min(rows.length,15);i++){
+    if(rows[i].some(c=>String(c).trim()==='System Field Id')){hi=i;break;}
+  }
+  if(hi<0)return{fields:[],rules:[]};
+  const hdr=rows[hi];
+  const ci=n=>hdr.findIndex(h=>String(h).trim()===n);
+  const C={iter2:0,fid:ci('System Field Id'),sfLbl:ci('SF Label'),type:ci('Type'),
+    en:ci('Customer Label'),he:ci('Customer Label Hebrew'),vis:ci('Visibility'),mand:ci('Mandatory')};
+  const fields=[],rules=[];let inBR=false;
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i];const c2=String(r[2]||'').trim();
+    if(c2==='Propagations / Business Rules'){inBR=true;continue;}
+    if(inBR){
+      const iter2=String(r[0]||'').trim(),obj=c2,trigger=String(r[3]||'').trim(),rule=String(r[5]||'').trim();
+      const brSkip=['Base Object','Function Rule Description','Additional Instructions'];
+      if(obj&&iter2!=='X'&&rule&&!brSkip.includes(obj))
+        rules.push({trigger:trigger.toLowerCase(),obj:obj.trim(),name:rule});
+      continue;
+    }
+    const fid=String(r[C.fid]||'').trim();
+    if(!fid||fid==='System Field Id')continue;
+    if(fid.startsWith('custom-'))continue;
+    const sfLbl=String(r[C.sfLbl]||'').trim(),ftype=String(r[C.type]||'').trim();
+    const custEn=String(r[C.en]||'').trim(),custHe=String(r[C.he]||'').trim();
+    const vis=String(r[C.vis]||'').trim(),mand=String(r[C.mand]||'').trim();
+    if((fid.includes('alt1')||fid.includes('alt2'))&&!custHe)continue;
+    const mode=(!vis||vis==='nan')?'hidden':vis==='Edit'?(mand==='Yes'?'required':'editable'):vis.includes('View')?'readonly':'hidden';
+    fields.push({fid,labelEn:custEn||sfLbl,labelHe:custHe||'',type:WB_TYPE_MAP[ftype]||'text',mode});
+  }
+  return{fields,rules};
+}
+
+/* Phase 1: load file, return sheet names only (fast) */
+/* Phase 2: parse only the selected sheets (lazy)     */
+let _wb=null;
+
+self.onmessage=function(e){
+  if(e.data.phase===1){
+    try{
+      self.postMessage({type:'progress',msg:'פותח קובץ...',sub:''});
+      _wb=XLSX.read(e.data.buf,{type:'array'});
+      const sheets=_wb.SheetNames.filter(n=>!e.data.skipList.some(s=>n.toLowerCase().includes(s)));
+      self.postMessage({type:'phase1done',sheetNames:_wb.SheetNames,sheets});
+    }catch(err){self.postMessage({type:'error',msg:err.message});}
+  } else if(e.data.phase===2){
+    try{
+      const selected=e.data.selected;
+      const parsed={};
+      selected.forEach((name,i)=>{
+        self.postMessage({type:'progress',msg:'מפרסר שדות...',sub:(i+1)+'/'+selected.length+': '+name});
+        parsed[name]=parseSheet(_wb.Sheets[name]);
+      });
+      self.postMessage({type:'phase2done',parsed});
+    }catch(err){self.postMessage({type:'error',msg:err.message});}
+  }
+};
+`;
+
+let _wbParsedCache = {}; // sheet name -> {fields,rules} from worker
+
+let _wbWorker=null; // keep worker alive between phases
+
+async function handleWBFile(file){
+  if(!file)return;
+  _wbShowLoading('קורא את הקובץ...','מעבד '+Math.round(file.size/1024)+'KB');
+  try{
+    const buf = await file.arrayBuffer();
+    _wbShowLoading('פותח קובץ...','');
+
+    // Terminate any previous worker
+    if(_wbWorker){try{_wbWorker.terminate();}catch(e){}}
+    const blob = new Blob([_WB_WORKER_SRC],{type:'application/javascript'});
+    const url = URL.createObjectURL(blob);
+    _wbWorker = new Worker(url);
+    URL.revokeObjectURL(url);
+
+    // Phase 1: just get sheet names (fast — no parsing)
+    const phase1 = await new Promise((resolve,reject)=>{
+      _wbWorker.onmessage = e=>{
+        if(e.data.type==='progress') _wbShowLoading(e.data.msg,e.data.sub);
+        else if(e.data.type==='phase1done') resolve(e.data);
+        else if(e.data.type==='error') reject(new Error(e.data.msg));
+      };
+      _wbWorker.onerror = e=>reject(e);
+      _wbWorker.postMessage({phase:1, buf, skipList:WB_SKIP}, [buf]);
+    });
+
+    _wbBook = {SheetNames: phase1.sheetNames};
+    _wbParsedCache = {};
+    _wbSheets = phase1.sheets;
+    document.getElementById('wbFileName').textContent = file.name;
+    document.getElementById('wbSheetCount').textContent = _wbSheets.length+' אזורים זמינים';
+    document.getElementById('wbFileInfo').style.display = 'flex';
+    _wbHideLoading();
+  } catch(err){
+    _wbHideLoading();
+    showToast('✗ שגיאה בטעינת הקובץ: '+err.message);
+  }
+}
+
+/* Step 2 — tab grid */
+function _wbRenderGrid(){
+  const g=document.getElementById('wbTabsGrid');g.innerHTML='';
+  _wbSheets.forEach(name=>{
+    const low=name.toLowerCase();
+    const auto=WB_AUTO_MAP.find(m=>m.kw.some(k=>low.includes(k)));
+    const sel=_wbSel.includes(name);
+    const d=document.createElement('div');
+    d.className='wb-tab-card'+(sel?' selected':'');
+    d.innerHTML=`<div class="wb-chk">${sel?'✓':''}</div>
+      <span class="wb-tab-name">${name}</span>
+      ${auto?`<span class="wb-tab-auto">↠ ${DOMAINS.find(x=>x.id===auto.domId)?.labelHe||''}</span>`
+            :`<span class="wb-tab-unknown">לא ממופה</span>`}`;
+    d.onclick=()=>{
+      _wbSel=sel?_wbSel.filter(t=>t!==name):[..._wbSel,name];
+      _wbRenderGrid();
+      document.getElementById('wbBtnNext').disabled=_wbSel.length===0;
+    };
+    g.appendChild(d);
+  });
+  document.getElementById('wbBtnNext').disabled=_wbSel.length===0;
+}
+function wbSelAll(v){_wbSel=v?[..._wbSheets]:[];_wbRenderGrid();}
+
+/* Step 3 — mapping with smart questions */
+async function _wbBuildMappings(){
+  _wbMaps=[];
+  for(const tab of _wbSel){
+    const low=tab.toLowerCase();
+    const auto=WB_AUTO_MAP.find(m=>m.kw.some(k=>low.includes(k)));
+    if(auto){
+      _wbMaps.push({tab,domId:auto.domId,auto:true});
+    } else {
+      const chosen=await _wbAsk(
+        `הטאב "${tab}" לא זוהה אוטומטית.\nלאיזה תחום לשייך את האזור הזה?`,
+        [{label:'— דלג על טאב זה —',val:''}, ...DOMAINS.map(d=>({label:d.labelHe+' · '+d.labelEn,val:d.id}))]
+      );
+      _wbMaps.push({tab,domId:chosen,auto:false});
+    }
+  }
+  _wbRenderMapList();
+}
+
+function _wbRenderMapList(){
+  const list=document.getElementById('wbMapList');list.innerHTML='';
+  _wbMaps.forEach((m,i)=>{
+    const row=document.createElement('div');row.className='wb-map-row';
+    row.innerHTML=`
+      <span class="wb-map-tab">
+        <i class="ti ti-table" style="font-size:13px;color:#0070d2;vertical-align:-1px;margin-left:4px"></i>${m.tab}
+        ${m.auto?'<span class="wb-tab-auto" style="margin-right:6px">אוטו</span>':''}
+      </span>
+      <i class="ti ti-arrow-narrow-left wb-map-arrow"></i>
+      <select class="wb-map-select" onchange="_wbMaps[${i}].domId=this.value">
+        <option value="">— דלג —</option>
+        ${DOMAINS.map(d=>`<option value="${d.id}"${m.domId===d.id?' selected':''}>${d.labelHe}</option>`).join('')}
+      </select>`;
+    list.appendChild(row);
+  });
+}
+
+/* Ask dialog — Promise */
+function _wbAsk(text,opts){
+  return new Promise(res=>{
+    document.getElementById('wbQTxt').textContent=text;
+    const c=document.getElementById('wbQOpts');c.innerHTML='';
+    opts.forEach(o=>{
+      const b=document.createElement('button');b.className='wb-q-opt';b.textContent=o.label;
+      b.onclick=()=>{document.getElementById('wbQOv').classList.remove('open');res(o.val);};
+      c.appendChild(b);
+    });
+    document.getElementById('wbQOv').classList.add('open');
+  });
+}
+
+/* Parse one sheet → {fields, rules} */
+function _wbParseSheet(sheetName){
+  /* Results pre-parsed by Web Worker — just return from cache */
+  return _wbParsedCache[sheetName] || {fields:[],rules:[]};
+}
+
+/* Step 4 — Diff */
+function _wbBuildDiff(){
+  _wbDiff=[];
+  _wbMaps.forEach(m=>{
+    if(!m.domId)return;
+    const domain=DOMAINS.find(d=>d.id===m.domId);if(!domain)return;
+    const {fields:wbF,rules:wbR}=_wbParseSheet(m.tab);
+    if(!wbF.length)return;
+    /* Find existing section with same name, or null */
+    const exSec=domain.sections.find(s=>s.nameEn===m.tab||s.nameHe===m.tab)||null;
+    const exF=exSec?exSec.fields:[];
+    const rows=[];
+    wbF.forEach(wf=>{
+      const ex=exF.find(e=>e.labelEn.toLowerCase()===wf.labelEn.toLowerCase()||(wf.labelHe&&e.labelHe===wf.labelHe));
+      if(!ex) rows.push({st:'new',labelEn:wf.labelEn,labelHe:wf.labelHe,mode:wf.mode,type:wf.type,wf,inc:true});
+      else if(ex.mode!==wf.mode||ex.type!==wf.type)
+        rows.push({st:'changed',labelEn:wf.labelEn,labelHe:wf.labelHe||ex.labelHe,mode:wf.mode,type:wf.type,oldMode:ex.mode,ex,wf,inc:true});
+      else rows.push({st:'same',labelEn:wf.labelEn,labelHe:wf.labelHe||ex.labelHe,mode:wf.mode,ex,inc:true});
+    });
+    exF.forEach(ef=>{
+      if(!wbF.find(wf=>wf.labelEn.toLowerCase()===ef.labelEn.toLowerCase()||(wf.labelHe&&wf.labelHe===ef.labelHe)))
+        rows.push({st:'removed',labelEn:ef.labelEn,labelHe:ef.labelHe,mode:ef.mode,ex:ef,inc:false});
+    });
+    _wbDiff.push({tab:m.tab,domId:m.domId,domLbl:domain.labelHe,rows,wbR,exSec});
+  });
+  _wbRenderDiff();
+}
+
+function _wbRenderDiff(){
+  const cont=document.getElementById('wbDiffCont');cont.innerHTML='';
+  if(!_wbDiff.length){cont.innerHTML='<div style="text-align:center;padding:30px;color:#bbb;font-size:13px">לא נמצאו שינויים</div>';return;}
+  _wbDiff.forEach((sec,si)=>{
+    const nC=sec.rows.filter(r=>r.st==='new').length,
+          cC=sec.rows.filter(r=>r.st==='changed').length,
+          rC=sec.rows.filter(r=>r.st==='removed').length,
+          sC=sec.rows.filter(r=>r.st==='same').length;
+    const wrap=document.createElement('div');wrap.className='wb-diff-sec';
+    wrap.innerHTML=`<div class="wb-diff-sec-head">
+      <i class="ti ti-table" style="font-size:13px;color:#0070d2"></i>
+      <strong>${sec.tab}</strong>
+      <i class="ti ti-arrow-narrow-left" style="color:#bbb;font-size:13px"></i>
+      <span style="color:#0070d2">${sec.domLbl}</span>
+      ${sec.exSec?'<span style="font-size:10px;background:#e8f3fd;color:#0070d2;border:1px solid #c5d9f0;border-radius:8px;padding:1px 7px">merge לאזור קיים</span>':'<span style="font-size:10px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;border-radius:8px;padding:1px 7px">אזור חדש</span>'}
+      <span style="margin-right:auto;display:flex;gap:4px">
+        ${nC?`<span class="wb-dbadge new">+${nC}</span>`:''}
+        ${cC?`<span class="wb-dbadge changed">~${cC}</span>`:''}
+        ${rC?`<span class="wb-dbadge removed">-${rC}</span>`:''}
+        <span class="wb-dbadge same">${sC} זהה</span>
+        ${sec.wbR&&sec.wbR.length?`<span style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;background:#e8eaf6;color:#3949ab;border:1px solid #c5cae9"><i class="ti ti-bolt" style="font-size:10px;vertical-align:-1px"></i> ${sec.wbR.length} BR</span>`:''}
+      </span></div>`;
+    const body=document.createElement('div');
+    const visible=sec.rows.filter(r=>r.st!=='same');
+    const sameR=sec.rows.filter(r=>r.st==='same');
+    visible.forEach((row,ri)=>body.appendChild(_mkDiffRow(row,si,sec.rows.indexOf(row))));
+    if(sameR.length){
+      const tog=document.createElement('div');
+      tog.style.cssText='font-size:11px;color:#0070d2;padding:5px 12px;cursor:pointer;border-top:1px solid #f5f5f5';
+      tog.textContent=`▸ הצג ${sameR.length} שדות זהים`;
+      tog.onclick=function(){
+        const shown=this.dataset.s==='1';this.dataset.s=shown?'':'1';
+        this.textContent=shown?`▸ הצג ${sameR.length} שדות זהים`:`▾ הסתר שדות זהים`;
+        if(!shown)sameR.forEach(row=>body.insertBefore(_mkDiffRow(row,si,sec.rows.indexOf(row)),tog));
+        else body.querySelectorAll('.ds'+si).forEach(el=>el.remove());
+      };
+      body.appendChild(tog);
+    }
+    // Show Business Rules below field rows
+    if(sec.wbR&&sec.wbR.length){
+      const brSec=document.createElement('div');
+      brSec.style.cssText='border-top:2px solid #e8eaf6;background:#f8f9ff;padding:7px 12px';
+      const norm=t=>(t||'').toLowerCase().replace(/[\s\-_]/g,'');
+      brSec.innerHTML=`<div style="font-size:11px;font-weight:700;color:#3949ab;margin-bottom:5px;display:flex;align-items:center;gap:5px"><i class="ti ti-bolt" style="font-size:13px"></i> Business Rules (${sec.wbR.length})</div>`+
+        sec.wbR.map(r=>{
+          const rawT=norm(r.trigger);
+          const tCls=rawT.includes('change')?'onchange':rawT.includes('load')?'onload':'onsave';
+          const tLbl=rawT.includes('change')?'On Change':rawT.includes('load')?'On Load':'On Save';
+          return`<div style="display:flex;align-items:flex-start;gap:7px;padding:3px 0;border-bottom:1px solid #eef0f8;font-size:11px">
+            <span class="br-rule-trigger-badge ${tCls}" style="font-size:10px;padding:1px 7px;flex-shrink:0">${tLbl}</span>
+            <div style="flex:1;color:#333;line-height:1.4">${r.obj?`<span style="color:#3949ab;font-weight:600">${escH(r.obj)}:</span> `:''}${escH(r.name)}</div>
+          </div>`;
+        }).join('');
+      body.appendChild(brSec);
+    }
+    wrap.appendChild(body);cont.appendChild(wrap);
+  });
+}
+
+function _mkDiffRow(row,si,ri){
+  const d=document.createElement('div');
+  d.className='wb-diff-row '+row.st+(row.st==='same'?' ds'+si:'');
+  const detail=row.st==='changed'?`${row.oldMode} → ${row.mode}`:row.st==='new'?row.mode:row.st==='removed'?'יוסר':'';
+  d.innerHTML=`<input type="checkbox" style="width:13px;height:13px;cursor:pointer;flex-shrink:0" title="כלול"
+      ${row.inc?'checked':''} onchange="_wbDiff[${si}].rows[${ri}].inc=this.checked">
+    <span class="wb-dbadge ${row.st}">${{new:'חדש',removed:'הוסר',changed:'שונה',same:'זהה'}[row.st]}</span>
+    <span class="wb-diff-lbl">${row.labelHe?row.labelHe+' · ':''}${row.labelEn}</span>
+    <span class="wb-diff-detail">${detail}</span>`;
+  return d;
+}
+
+/* Apply */
+function _wbApply(){
+  let n=0;
+  _wbDiff.forEach(sec=>{
+    const domain=DOMAINS.find(d=>d.id===sec.domId);if(!domain)return;
+    let s=sec.exSec;
+    if(!s){
+      s={id:++secSeq,nameHe:sec.tab,nameEn:sec.tab,eff:false,collapsed:false,fields:[],rules:[]};
+      domain.sections.push(s);
+    }
+    if(!s.rules)s.rules=[];
+    sec.rows.forEach(row=>{
+      if(!row.inc)return;
+      if(row.st==='new'){
+        s.fields.push({id:++fldSeq,labelHe:row.labelHe,labelEn:row.labelEn,
+          type:row.type,mode:row.mode,status:'approved',picklistValues:[],rules:[]});n++;
+      } else if(row.st==='changed'&&row.ex){row.ex.mode=row.mode;row.ex.type=row.type;n++;}
+        else if(row.st==='removed'&&row.ex){s.fields=s.fields.filter(f=>f!==row.ex);n++;}
+    });
+    sec.wbR.forEach(r=>{
+      const norm=t=>(t||'').toLowerCase().replace(/[\s\-_]/g,'');
+      const rawT=norm(r.trigger);
+      const trigger=rawT.includes('change')?'onchange':rawT.includes('load')?'onload':'onsave';
+      // Try to route onchange rules to the matching field
+      if(trigger==='onchange'&&r.obj){
+        const fld=s.fields.find(f=>
+          norm(f.labelEn)===norm(r.obj)||
+          f.labelHe===r.obj||
+          (r.obj.length>3&&(norm(f.labelEn).includes(norm(r.obj))||norm(r.obj).includes(norm(f.labelEn))))
+        );
+        if(fld){
+          if(!fld.rules)fld.rules=[];
+          if(!fld.rules.find(er=>er.action&&er.action.includes(r.name)))
+            fld.rules.push({id:++brSeq,trigger:'onchange',condition:'',action:r.name,status:'approved'});
+          return;
+        }
+      }
+      // Section-level rule
+      if(!s.rules)s.rules=[];
+      if(!s.rules.find(er=>er.action&&er.action.includes(r.name)))
+        s.rules.push({id:++brSeq,trigger,condition:'',action:r.name,status:'approved'});
+    });
+  });
+  closeWB();renderBuilder();generate();
+  showToast(`✓ עודכנו ${n} שינויים מה-Workbook`);
+}
+
+/* Navigation */
+async function wbNext(){
+  if(_wbStep===1){
+    if(!_wbBook){showToast('יש לבחור קובץ תחילה');return;}
+    _wbSel=[];_wbRenderGrid();_wbGoStep(2);
+    document.getElementById('wbBtnNext').disabled=true;
+  } else if(_wbStep===2){
+    if(!_wbSel.length){showToast('יש לבחור לפחות אזור אחד');return;}
+    // Phase 2: parse only selected sheets in worker
+    _wbShowLoading('מפרסר שדות...','רק '+_wbSel.length+' גיליונות נבחרים');
+    await new Promise(r=>setTimeout(r,30));
+    const phase2 = await new Promise((resolve,reject)=>{
+      _wbWorker.onmessage = e=>{
+        if(e.data.type==='progress') _wbShowLoading(e.data.msg,e.data.sub);
+        else if(e.data.type==='phase2done') resolve(e.data);
+        else if(e.data.type==='error') reject(new Error(e.data.msg));
+      };
+      _wbWorker.onerror = e=>reject(e);
+      _wbWorker.postMessage({phase:2, selected:_wbSel});
+    });
+    _wbParsedCache = phase2.parsed;
+    _wbHideLoading();
+    // Now build mappings
+    const needsQ=_wbSel.filter(tab=>{
+      const low=tab.toLowerCase();
+      return !WB_AUTO_MAP.some(m=>m.kw.some(k=>low.includes(k)));
+    });
+    if(needsQ.length===0){
+      _wbShowLoading('ממפה אזורים אוטומטית...','מזהה '+_wbSel.length+' אזורים');
+      await new Promise(r=>setTimeout(r,40));
+      await _wbBuildMappings();
+      _wbHideLoading();
+    } else {
+      await _wbBuildMappings();
+    }
+    _wbGoStep(3);
+  } else if(_wbStep===3){
+    _wbShowLoading('מנתח שינויים...','משווה שדות קיימים מול Workbook');
+    await new Promise(r=>setTimeout(r,40));
+    _wbBuildDiff();
+    _wbHideLoading();
+    _wbGoStep(4);
+  } else if(_wbStep===4){
+    _wbShowLoading('מחיל שינויים...','');
+    await new Promise(r=>setTimeout(r,40));
+    _wbApply();
+    _wbHideLoading();
+  }
+}
+
+
+/* ══ SAVE / LOAD CONFIG ══ */
+async function saveConfig(){
+  const payload={
+    version:'7.7',
+    savedAt:new Date().toISOString(),
+    displayLang,
+    domains: DOMAINS.map(d=>({
+      id:d.id, labelHe:d.labelHe, labelEn:d.labelEn, icon:d.icon,
+      sections: d.sections.map(s=>({
+        id:s.id, nameHe:s.nameHe, nameEn:s.nameEn, eff:s.eff||false, collapsed:s.collapsed||false,
+        rules:(s.rules||[]),
+        fields: s.fields.map(f=>({
+          id:f.id, labelHe:f.labelHe, labelEn:f.labelEn,
+          type:f.type, mode:f.mode, status:f.status||'approved',
+          picklistValues:f.picklistValues||[], rules:f.rules||[]
+        }))
+      }))
+    })),
+    activeDomain: document.querySelector('.dom-btn.active')?.dataset?.domId||'personal'
+  };
+  const ts=new Date().toISOString().slice(0,16).replace('T','_').replace(':','-');
+  await smartSave(JSON.stringify(payload,null,2), 'sf_mockup_config_'+ts+'.json', 'application/json', '.json');
+  showToast('✓ קונפיגורציה נשמרה');
+}
+
+function loadConfig(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const payload=JSON.parse(e.target.result);
+      if(!payload.domains)throw new Error('קובץ לא תקין');
+      // Restore domains
+      DOMAINS.forEach(d=>{
+        const saved=payload.domains.find(x=>x.id===d.id);
+        if(saved){
+          d.sections=saved.sections||[];
+          // Restore sequences
+          d.sections.forEach(s=>{
+            if(s.id>secSeq)secSeq=s.id;
+            (s.fields||[]).forEach(f=>{if(f.id>fldSeq)fldSeq=f.id;});
+            (s.rules||[]).forEach(r=>{if(r.id>brSeq)brSeq=r.id;});
+          });
+        }
+      });
+      // Restore active domain
+      if(payload.activeDomain){
+        document.querySelectorAll('.dom-btn').forEach(b=>{
+          b.classList.toggle('active',b.dataset.domId===payload.activeDomain);
+        });
+      }
+      if(payload.displayLang) setLang(payload.displayLang);
+      renderBuilder();
+      generate();
+      showToast('✓ קונפיגורציה נטענה בהצלחה ('+(payload.savedAt||'').slice(0,10)+')');
+    } catch(err){
+      showToast('✗ שגיאה בטעינה: '+err.message);
+    }
+    evt.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+
+function _wbShowLoading(msg,sub){
+  document.getElementById('wbLoadMsg').textContent=msg||'טוען...';
+  document.getElementById('wbLoadSub').textContent=sub||'';
+  document.getElementById('wbLoading').classList.add('show');
+  document.getElementById('wbBtnNext').disabled=true;
+  document.getElementById('wbBtnBack').disabled=true;
+}
+function _wbHideLoading(){
+  document.getElementById('wbLoading').classList.remove('show');
+  document.getElementById('wbBtnNext').disabled=false;
+  document.getElementById('wbBtnBack').disabled=false;
+}
+
+/* ═══ DEFAULTS ═══ */
+(function init(){
+  const pd=DOMAINS.find(d=>d.id==='personal');
+  pd.sections.push({id:++secSeq,nameHe:'פרטים אישיים',nameEn:'Personal Details',eff:true,collapsed:false,fields:[
+    {id:++fldSeq,labelHe:'שם פרטי',    labelEn:'First Name',   type:'text',    mode:'required',status:'approved',picklistValues:[],rules:[]},
+    {id:++fldSeq,labelHe:'שם משפחה',   labelEn:'Last Name',    type:'text',    mode:'required',status:'approved',picklistValues:[],rules:[]},
+    {id:++fldSeq,labelHe:'מגדר',       labelEn:'Gender',       type:'picklist',mode:'required',status:'approved',
+      picklistValues:[{he:'זכר',en:'Male'},{he:'נקבה',en:'Female'},{he:'אחר',en:'Other'}],rules:[]},
+    {id:++fldSeq,labelHe:'תאריך לידה', labelEn:'Date of Birth',type:'date',    mode:'editable',status:'approved',picklistValues:[],rules:[]},
+    {id:++fldSeq,labelHe:'מידע מקומי', labelEn:'Local Info',   type:'picklist',mode:'editable',status:'pending',
+      picklistValues:[{he:'ישראל',en:'Israel'},{he:'גרמניה',en:'Germany'},{he:'ארה"ב',en:'USA'}],rules:[
+        {id:++brSeq,trigger:'onchange',condition:'אם מדינה = ישראל',action:'הפוך שדה "מספר ת.ז." לחובה, הסתר שדה "דרכון"',status:'pending'}
+      ]},
+    {id:++fldSeq,labelHe:'מספר עובד',  labelEn:'Employee ID',  type:'text',    mode:'readonly',status:'approved',picklistValues:[],rules:[]},
+  ]});
+  pd.sections.push({id:++secSeq,nameHe:'כתובות',nameEn:'Addresses',eff:false,collapsed:false,fields:[
+    {id:++fldSeq,labelHe:'סוג כתובת',labelEn:'Address Type',type:'picklist',mode:'required',
+      picklistValues:[{he:'בית',en:'Home'},{he:'עבודה',en:'Work'},{he:'אחר',en:'Other'}]},
+    {id:++fldSeq,labelHe:'רחוב',    labelEn:'Street',      type:'text',    mode:'editable',picklistValues:[]},
+    {id:++fldSeq,labelHe:'עיר',     labelEn:'City',        type:'text',    mode:'required',picklistValues:[]},
+    {id:++fldSeq,labelHe:'מדינה',   labelEn:'Country',     type:'picklist',mode:'required',
+      picklistValues:[{he:'ישראל',en:'Israel'},{he:'גרמניה',en:'Germany'},{he:'ארה"ב',en:'USA'}]},
+  ]});
+
+  const ed=DOMAINS.find(d=>d.id==='employment');
+  ed.sections.push({id:++secSeq,nameHe:'פרטי עבודה',nameEn:'Job Information',eff:true,collapsed:false,fields:[
+    {id:++fldSeq,labelHe:'מחלקה',      labelEn:'Department',  type:'picklist',mode:'required',
+      picklistValues:[{he:'משאבי אנוש',en:'HR'},{he:'כספים',en:'Finance'},{he:'הנדסה',en:'Engineering'}]},
+    {id:++fldSeq,labelHe:'תפקיד',      labelEn:'Job Title',   type:'text',    mode:'required',picklistValues:[]},
+    {id:++fldSeq,labelHe:'מנהל',       labelEn:'Manager',     type:'text',    mode:'readonly',picklistValues:[]},
+    {id:++fldSeq,labelHe:'תאריך כניסה',labelEn:'Start Date',  type:'date',    mode:'readonly',picklistValues:[]},
+  ]});
+
+  selectDomain('personal');
+  generate();
+})();
+</script>
+<!-- Business Rules Panel -->
+<div class="br-panel-overlay" id="brOverlay" onclick="if(event.target===this)closeBR()">
+  <div class="br-panel">
+    <div class="br-head">
+      <i class="ti ti-bolt" style="font-size:18px"></i>
+      <div>
+        <div class="br-head-title" id="brTitle">Business Rules</div>
+        <div class="br-head-sub" id="brSubtitle"></div>
+      </div>
+      <button class="br-close" onclick="closeBR()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="br-body" id="brBody"></div>
+    <div class="br-ftr">
+      <button class="pp-bsave" onclick="addRule()"><i class="ti ti-plus" style="font-size:13px"></i> הוסף חוק</button>
+      <button class="pp-bcancel" onclick="closeBR()">סגור</button>
+      <span id="brRuleCount" style="margin-right:auto;font-size:12px;color:#888"></span>
+    </div>
+  </div>
+</div>
+
+
+<!-- WB Importer -->
+<div class="wb-overlay" id="wbOverlay">
+  <div class="wb-modal">
+    <div class="wb-head">
+      <i class="ti ti-file-spreadsheet" style="font-size:20px"></i>
+      <div><div class="wb-head-title">טעינת Workbook</div><div class="wb-head-sub" id="wbSub">בחר קובץ Excel</div></div>
+      <button class="wb-close" onclick="closeWB()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="wb-loading" id="wbLoading"><div class="wb-spinner"></div><div class="wb-loading-msg" id="wbLoadMsg">טוען...</div><div class="wb-loading-sub" id="wbLoadSub"></div></div><div class="wb-body">
+      <!-- Step 1 -->
+      <div class="wb-step active" id="wbStep1">
+        <div class="wb-step-title"><i class="ti ti-upload" style="font-size:15px"></i> שלב 1 — העלאת קובץ</div>
+        <div class="wb-drop" id="wbDrop"
+          onclick="document.getElementById('wbFileIn').click()"
+          ondragover="event.preventDefault();this.classList.add('over')"
+          ondragleave="this.classList.remove('over')"
+          ondrop="event.preventDefault();this.classList.remove('over');handleWBFile(event.dataTransfer.files[0])">
+          <i class="ti ti-table"></i>
+          <p><strong>לחץ לבחירת קובץ</strong> או גרור לכאן</p>
+          <p style="margin-top:5px;font-size:11px;color:#bbb">.xlsx · .xls</p>
+        </div>
+        <input type="file" id="wbFileIn" accept=".xlsx,.xls" style="display:none" onchange="handleWBFile(this.files[0])"/>
+        <div id="wbFileInfo" style="display:none;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:9px 13px;font-size:12px;align-items:center;gap:8px">
+          <i class="ti ti-file-check" style="color:#2e7d32;font-size:17px"></i>
+          <span id="wbFileName"></span>
+          <span id="wbSheetCount" style="margin-right:auto;color:#666"></span>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="wb-step" id="wbStep2">
+        <div class="wb-step-title"><i class="ti ti-list-check" style="font-size:15px"></i> שלב 2 — בחר טאבים (אזורים) לייבוא</div>
+        <div style="font-size:12px;color:#555;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span>כל טאב יהפוך לאזור (Section) בתוך תחום</span>
+          <button onclick="wbSelAll(true)" style="font-size:11px;padding:2px 9px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-family:inherit">בחר הכל</button>
+          <button onclick="wbSelAll(false)" style="font-size:11px;padding:2px 9px;border:1px solid #ccc;border-radius:4px;background:#fff;cursor:pointer;font-family:inherit">נקה</button>
+        </div>
+        <div class="wb-tabs-grid" id="wbTabsGrid"></div>
+      </div>
+      <!-- Step 3 -->
+      <div class="wb-step" id="wbStep3">
+        <div class="wb-step-title"><i class="ti ti-arrows-right-left" style="font-size:15px"></i> שלב 3 — לאיזה תחום משויך כל אזור?</div>
+        <div style="font-size:12px;color:#555">כל טאב = אזור חדש. בחר לאיזה <strong>תחום</strong> (Domain) לשייך אותו</div>
+        <div id="wbMapList" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <!-- Step 4 -->
+      <div class="wb-step" id="wbStep4">
+        <div class="wb-step-title"><i class="ti ti-git-diff" style="font-size:15px"></i> שלב 4 — סקירת שינויים לפני אישור</div>
+        <div style="font-size:12px;color:#555;display:flex;gap:10px;flex-wrap:wrap">
+          <span><span class="wb-dbadge new" style="display:inline-block">חדש</span> שדה חדש</span>
+          <span><span class="wb-dbadge removed" style="display:inline-block">הוסר</span> לא קיים ב-WB</span>
+          <span><span class="wb-dbadge changed" style="display:inline-block">שונה</span> שינוי מצב/סוג</span>
+        </div>
+        <div style="font-size:11px;color:#0070d2;background:#e8f3fd;border-radius:5px;padding:6px 10px">
+          <i class="ti ti-info-circle" style="font-size:12px;vertical-align:-1px"></i>
+          בטל סימון ✓ כדי לדלג על שינוי ספציפי
+        </div>
+        <div id="wbDiffCont"></div>
+      </div>
+    </div>
+    <div class="wb-footer">
+      <button class="wb-btn sec" id="wbBtnBack" onclick="wbBack()" style="display:none"><i class="ti ti-arrow-right"></i> חזור</button>
+      <button class="wb-btn pri" id="wbBtnNext" onclick="wbNext()" disabled><i class="ti ti-arrow-left"></i> <span id="wbNextLbl">המשך</span></button>
+      <div class="wb-prog" id="wbProg">שלב 1 מתוך 4</div>
+    </div>
+  </div>
+</div>
+<!-- WB Question Dialog -->
+<div class="wb-q-overlay" id="wbQOv">
+  <div class="wb-q-box">
+    <div class="wb-q-head"><i class="ti ti-help-circle" style="font-size:17px;color:#0070d2"></i><span style="font-size:13px;font-weight:600;color:#1a237e">שאלת מיפוי</span></div>
+    <div class="wb-q-body"><div class="wb-q-text" id="wbQTxt"></div><div id="wbQOpts" style="display:flex;flex-direction:column;gap:6px"></div></div>
+  </div>
+</div>
+
+<!-- Template Library -->
+<div class="tpl-overlay" id="tplOverlay" onclick="if(event.target===this)closeTemplates()">
+  <div class="tpl-modal">
+    <div class="tpl-head">
+      <i class="ti ti-layout-grid-add" style="font-size:20px"></i>
+      <div>
+        <div class="tpl-head-title">ספריית תבניות</div>
+        <div class="tpl-head-sub">לחץ על תבנית להוספתה לתחום הפעיל</div>
+      </div>
+      <button class="wb-close" onclick="closeTemplates()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="tpl-cats">
+      <button class="tpl-cat active" data-cat="all" onclick="filterTemplates('all')">הכל</button>
+      <button class="tpl-cat" data-cat="personal" onclick="filterTemplates('personal')"><i class="ti ti-user" style="font-size:12px;vertical-align:-1px"></i> אישי</button>
+      <button class="tpl-cat" data-cat="employment" onclick="filterTemplates('employment')"><i class="ti ti-briefcase" style="font-size:12px;vertical-align:-1px"></i> עבודה</button>
+      <button class="tpl-cat" data-cat="compensation" onclick="filterTemplates('compensation')"><i class="ti ti-currency-dollar" style="font-size:12px;vertical-align:-1px"></i> תגמול</button>
+      <button class="tpl-cat" data-cat="learning" onclick="filterTemplates('learning')"><i class="ti ti-book" style="font-size:12px;vertical-align:-1px"></i> למידה</button>
+    </div>
+    <div class="tpl-grid" id="tplGrid"></div>
+  </div>
+</div>
+
+</body>
+</html>
